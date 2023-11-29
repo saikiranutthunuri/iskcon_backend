@@ -1,0 +1,1 @@
+{"version":3,"file":"spot-light-events.module.js","sourceRoot":"","sources":["../../../src/spot-light-events/spot-light-events.module.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAAwC;AACxC,2EAAqE;AACrE,6EAAwE;AAKjE,IAAM,qBAAqB,GAA3B,MAAM,qBAAqB;CAAG,CAAA;AAAxB,sDAAqB;gCAArB,qBAAqB;IAHjC,IAAA,eAAM,EAAC;QACN,SAAS,EAAE,CAAC,kDAAsB,EAAE,GAAG,qDAAwB,CAAC;KACjE,CAAC;GACW,qBAAqB,CAAG"}
