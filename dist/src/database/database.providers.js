@@ -15,8 +15,8 @@ exports.databaseProviders = [
                 dialect: 'mysql',
                 host: 'localhost',
                 port: 3306,
-                username: 'root',
-                password: '1234',
+                username: 'JM',
+                password: 'JMMYSQL',
                 database: 'iskcon_db',
             });
             sequelize.addModels([

@@ -1,5 +1,5 @@
-/// <reference types="node" />
 /// <reference types="multer" />
+/// <reference types="node" />
 import { HttpException } from '@nestjs/common';
 import { AudioChantService } from 'src/audio-chant/audio-chant.service';
 import { DonationsService } from 'src/donations/donations.service';
@@ -119,7 +119,7 @@ export declare class AdminController {
     GetDonationsByDonationIdMethod(request: Request, donationId: string): Promise<import("src/models").donations | HttpException>;
     DeleteDonation(request: Request, donationId: any): Promise<number>;
     GetAllSevasMethod(request: Request): Promise<sevas[]>;
-    GetSevasBySevaIdMethod(request: Request, sevaId: string): Promise<HttpException | sevas>;
+    GetSevasBySevaIdMethod(request: Request, sevaId: string): Promise<sevas | HttpException>;
     DeleteSevaMethod(request: Request, sevaId: any): Promise<number | void>;
     GetFestivalMethod(request: Request): void;
     getAllFestivals(): Promise<{
