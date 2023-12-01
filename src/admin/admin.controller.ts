@@ -78,6 +78,24 @@ export class CreateFestivalDTO {
   })
   @IsOptional()
   eventImage?: Express.Multer.File;
+
+  @ApiProperty({ description: 'Flag indicating if Seva is associated', required: false })
+  @IsOptional()
+  hasSeva?: number;
+
+  @ApiProperty({ description: 'Seva ID', required: false })
+  @IsOptional()
+  @IsNotEmpty({ message: 'Seva ID is required when hasSeva is 1' })
+  sevaId?: string;
+
+  @ApiProperty({ description: 'Flag indicating if Donation is associated', required: false })
+  @IsOptional()
+  hasDonation?: number;
+
+  @ApiProperty({ description: 'Donation ID', required: false })
+  @IsOptional()
+  @IsNotEmpty({ message: 'Donation ID is required when hasDonation is 1' })
+  donationId?: string;
 }
 
 
@@ -685,23 +703,62 @@ async updateDonation(
 
 
 
- @Post('/festivals/createFestival')
-  @ApiOperation({ summary: 'Create a new festival' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Festival details',
-    type: CreateFestivalDTO,
-  })
-  @UseInterceptors(FileInterceptor('eventImage'))
-  async createFestival(
-    @Body() createFestivalDTO: CreateFestivalDTO,
-    @UploadedFile() eventImage: Express.Multer.File,
-  ) {
+@Post('/festivals/createFestival')
+@ApiOperation({ summary: 'Create a new festival' })
+@ApiConsumes('multipart/form-data')
+@ApiBody({
+  description: 'Festival details',
+  type: CreateFestivalDTO,
+})
+@UseInterceptors(FileInterceptor('eventImage'))
+async createFestival(
+  @Body() createFestivalDTO: CreateFestivalDTO,
+  @UploadedFile() eventImage: Express.Multer.File,
+) {
+  try {
     // Access the uploaded file using the eventImage parameter
     createFestivalDTO.eventImage = eventImage;
 
-    return this.festivalsService.createFestival(createFestivalDTO);
+    // Log the input parameters
+    console.log('hasDonation:', createFestivalDTO.hasDonation);
+    console.log('hasSeva:', createFestivalDTO.hasSeva);
+    console.log('sevaId:', createFestivalDTO.sevaId);
+    console.log('donationId:', createFestivalDTO.donationId);
+    console.log('eventImage:', createFestivalDTO.eventImage);
+
+    // Check if hasSpotlight is 1, an image is required
+if (createFestivalDTO.hasSpotlight === 1 || !createFestivalDTO.eventImage) {
+  throw new Error('Image is required for festivals with Spotlight.');
+}
+
+// Check if hasSeva is 1, sevaId should be provided and not undefined
+if (createFestivalDTO.hasSeva === 1 || createFestivalDTO.sevaId === undefined) {
+  throw new Error('Seva ID is required when hasSeva is 1.');
+}
+
+// Check if hasDonation is 1, donationId should be provided and not undefined
+if (createFestivalDTO.hasDonation === 1 || createFestivalDTO.donationId === undefined) {
+  throw new Error('Donation ID is required when hasDonation is 1.');
+}
+
+
+    // Call the service method to create the festival
+    const result = await this.festivalsService.createFestival(createFestivalDTO);
+
+    return {
+      status: true,
+      statusMessage: 'Festival created successfully',
+      data: result,
+    };
+  } catch (error) {
+    console.error('Error creating festival:', error.message);
+    // Handle the error appropriately (logging, returning an error response, etc.)
+    throw new HttpException('Failed to create Festival', HttpStatus.INTERNAL_SERVER_ERROR);
   }
+}
+
+
+
 
 
 

@@ -65,6 +65,28 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Object)
 ], CreateFestivalDTO.prototype, "eventImage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Flag indicating if Seva is associated', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateFestivalDTO.prototype, "hasSeva", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Seva ID', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNotEmpty)({ message: 'Seva ID is required when hasSeva is 1' }),
+    __metadata("design:type", String)
+], CreateFestivalDTO.prototype, "sevaId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Flag indicating if Donation is associated', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateFestivalDTO.prototype, "hasDonation", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Donation ID', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNotEmpty)({ message: 'Donation ID is required when hasDonation is 1' }),
+    __metadata("design:type", String)
+], CreateFestivalDTO.prototype, "donationId", void 0);
 class CreateDonationDTO {
 }
 exports.CreateDonationDTO = CreateDonationDTO;
@@ -507,8 +529,33 @@ let AdminController = AdminController_1 = class AdminController {
         return this.sevasService.deleteSeva(sevaId);
     }
     async createFestival(createFestivalDTO, eventImage) {
-        createFestivalDTO.eventImage = eventImage;
-        return this.festivalsService.createFestival(createFestivalDTO);
+        try {
+            createFestivalDTO.eventImage = eventImage;
+            console.log('hasDonation:', createFestivalDTO.hasDonation);
+            console.log('hasSeva:', createFestivalDTO.hasSeva);
+            console.log('sevaId:', createFestivalDTO.sevaId);
+            console.log('donationId:', createFestivalDTO.donationId);
+            console.log('eventImage:', createFestivalDTO.eventImage);
+            if (createFestivalDTO.hasSpotlight === 1 || !createFestivalDTO.eventImage) {
+                throw new Error('Image is required for festivals with Spotlight.');
+            }
+            if (createFestivalDTO.hasSeva === 1 || createFestivalDTO.sevaId === undefined) {
+                throw new Error('Seva ID is required when hasSeva is 1.');
+            }
+            if (createFestivalDTO.hasDonation === 1 || createFestivalDTO.donationId === undefined) {
+                throw new Error('Donation ID is required when hasDonation is 1.');
+            }
+            const result = await this.festivalsService.createFestival(createFestivalDTO);
+            return {
+                status: true,
+                statusMessage: 'Festival created successfully',
+                data: result,
+            };
+        }
+        catch (error) {
+            console.error('Error creating festival:', error.message);
+            throw new common_1.HttpException('Failed to create Festival', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     GetFestivalMethod(request) {
         return;

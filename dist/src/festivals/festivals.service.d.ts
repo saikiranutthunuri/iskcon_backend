@@ -19,6 +19,7 @@ export declare class FestivalsService {
         status: boolean;
         statusMessage: string;
     }>;
+    findFestivalByName(name: string): Promise<Festivals | null>;
     createFestival(createFestivalDTO: CreateFestivalDTO): Promise<{
         id: string;
         name: string;

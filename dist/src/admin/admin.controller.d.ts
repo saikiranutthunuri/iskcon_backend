@@ -16,6 +16,10 @@ export declare class CreateFestivalDTO {
     description?: string;
     hasSpotlight?: number;
     eventImage?: Express.Multer.File;
+    hasSeva?: number;
+    sevaId?: string;
+    hasDonation?: number;
+    donationId?: string;
 }
 export declare class CreateDonationDTO {
     name: string;
@@ -135,11 +139,15 @@ export declare class AdminController {
     GetSevasBySevaIdMethod(request: Request, sevaId: string): Promise<HttpException | sevas>;
     DeleteSevaMethod(request: Request, sevaId: any): Promise<number | void>;
     createFestival(createFestivalDTO: CreateFestivalDTO, eventImage: Express.Multer.File): Promise<{
-        id: string;
-        name: string;
-        date: Date;
-        description: string;
-        hasSpotlight: number;
+        status: boolean;
+        statusMessage: string;
+        data: {
+            id: string;
+            name: string;
+            date: Date;
+            description: string;
+            hasSpotlight: number;
+        };
     }>;
     GetFestivalMethod(request: Request): void;
     getAllFestivals(): Promise<{

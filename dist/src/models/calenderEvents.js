@@ -43,11 +43,11 @@ __decorate([
     __metadata("design:type", Date)
 ], calenderEvents.prototype, "date", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ field: 'HasDonation', allowNull: true, type: sequelize_typescript_1.DataType.TINYINT }),
+    (0, sequelize_typescript_1.Column)({ field: 'HasDonation', allowNull: true, type: sequelize_typescript_1.DataType.TINYINT, defaultValue: "0" }),
     __metadata("design:type", Number)
 ], calenderEvents.prototype, "hasDonation", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ field: 'HasSeva', allowNull: true, type: sequelize_typescript_1.DataType.TINYINT }),
+    (0, sequelize_typescript_1.Column)({ field: 'HasSeva', allowNull: true, type: sequelize_typescript_1.DataType.TINYINT, defaultValue: "0" }),
     __metadata("design:type", Number)
 ], calenderEvents.prototype, "hasSeva", void 0);
 __decorate([

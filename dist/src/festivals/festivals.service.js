@@ -69,32 +69,39 @@ let FestivalsService = FestivalsService_1 = class FestivalsService {
             throw new Error('Failed to update Festival');
         }
     }
-    async createFestival(createFestivalDTO) {
-        const festivalId = (0, uuid_1.v4)();
-        if (createFestivalDTO.hasSpotlight !== undefined &&
-            createFestivalDTO.hasSpotlight !== null &&
-            ![0, 1].includes(createFestivalDTO.hasSpotlight)) {
-            throw new Error('Invalid value for hasSpotlight. Only 0 or 1 are allowed.');
-        }
-        if (createFestivalDTO.hasSpotlight === 1 && !createFestivalDTO.eventImage) {
-            throw new Error('Image is required for festivals with Spotlight.');
-        }
-        const newFestival = new this.festivalsRepository({
-            id: festivalId,
-            name: createFestivalDTO.name,
-            date: createFestivalDTO.date,
-            description: createFestivalDTO.description,
-            hasSpotlight: createFestivalDTO.hasSpotlight || 0,
-            eventImage: createFestivalDTO.hasSpotlight ? createFestivalDTO.eventImage.buffer : undefined,
+    async findFestivalByName(name) {
+        return this.festivalsRepository.findOne({
+            where: { name },
         });
-        await newFestival.save();
-        return {
-            id: newFestival.id,
-            name: newFestival.name,
-            date: newFestival.date,
-            description: newFestival.description,
-            hasSpotlight: newFestival.hasSpotlight,
-        };
+    }
+    async createFestival(createFestivalDTO) {
+        try {
+            const festivalId = (0, uuid_1.v4)();
+            const newFestival = new this.festivalsRepository({
+                id: festivalId,
+                name: createFestivalDTO.name,
+                date: createFestivalDTO.date,
+                description: createFestivalDTO.description,
+                hasSpotlight: createFestivalDTO.hasSpotlight || 0,
+                eventImage: createFestivalDTO.eventImage ? createFestivalDTO.eventImage.buffer : undefined,
+                hasSeva: createFestivalDTO.hasSeva,
+                sevaId: createFestivalDTO.sevaId,
+                hasDonation: createFestivalDTO.hasDonation,
+                donationId: createFestivalDTO.donationId,
+            });
+            await newFestival.save();
+            return {
+                id: newFestival.id,
+                name: newFestival.name,
+                date: newFestival.date,
+                description: newFestival.description,
+                hasSpotlight: newFestival.hasSpotlight,
+            };
+        }
+        catch (error) {
+            console.error('Error creating festival:', error.message);
+            throw new Error('Failed to create Festival.');
+        }
     }
 };
 exports.FestivalsService = FestivalsService;

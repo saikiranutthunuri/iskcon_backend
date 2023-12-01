@@ -57,10 +57,10 @@ export class calenderEvents
   @Column({ field: 'Date', allowNull: true, type: DataType.DATE(6) })
   date?: Date;
 
-  @Column({ field: 'HasDonation', allowNull: true, type: DataType.TINYINT })
+  @Column({ field: 'HasDonation', allowNull: true, type: DataType.TINYINT , defaultValue: "0" })
   hasDonation?: number;
 
-  @Column({ field: 'HasSeva', allowNull: true, type: DataType.TINYINT })
+  @Column({ field: 'HasSeva', allowNull: true, type: DataType.TINYINT  , defaultValue: "0" })
   hasSeva?: number;
 
   @Column({ field: 'DonationId', allowNull: true, type: DataType.CHAR(36) })
