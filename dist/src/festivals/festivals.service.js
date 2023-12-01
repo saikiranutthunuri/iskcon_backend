@@ -21,30 +21,6 @@ let FestivalsService = FestivalsService_1 = class FestivalsService {
         this.festivalsRepository = festivalsRepository;
         this.logger = new common_1.Logger(FestivalsService_1.name);
     }
-    async create(createFestivalDto) {
-        try {
-            const { title, file, startDate, endDate } = createFestivalDto;
-            const newFestival = await this.festivalsRepository.create({
-                id: (0, uuid_1.v4)(),
-                title: title,
-                file: file,
-                startDate: startDate,
-                endDate: endDate,
-            });
-            this.logger.debug('Festival created successfully', newFestival);
-            return {
-                id: newFestival.id,
-                title: newFestival.title,
-                startDate: newFestival.startDate,
-                endDate: newFestival.endDate,
-                message: 'Festival created successfully',
-            };
-        }
-        catch (error) {
-            this.logger.error(error.message);
-            throw new Error('Failed to create Festival');
-        }
-    }
     async findAll() {
         try {
             const allFestivals = await this.festivalsRepository.findAll();
@@ -92,6 +68,33 @@ let FestivalsService = FestivalsService_1 = class FestivalsService {
             this.logger.error(error.message);
             throw new Error('Failed to update Festival');
         }
+    }
+    async createFestival(createFestivalDTO) {
+        const festivalId = (0, uuid_1.v4)();
+        if (createFestivalDTO.hasSpotlight !== undefined &&
+            createFestivalDTO.hasSpotlight !== null &&
+            ![0, 1].includes(createFestivalDTO.hasSpotlight)) {
+            throw new Error('Invalid value for hasSpotlight. Only 0 or 1 are allowed.');
+        }
+        if (createFestivalDTO.hasSpotlight === 1 && !createFestivalDTO.eventImage) {
+            throw new Error('Image is required for festivals with Spotlight.');
+        }
+        const newFestival = new this.festivalsRepository({
+            id: festivalId,
+            name: createFestivalDTO.name,
+            date: createFestivalDTO.date,
+            description: createFestivalDTO.description,
+            hasSpotlight: createFestivalDTO.hasSpotlight || 0,
+            eventImage: createFestivalDTO.hasSpotlight ? createFestivalDTO.eventImage.buffer : undefined,
+        });
+        await newFestival.save();
+        return {
+            id: newFestival.id,
+            name: newFestival.name,
+            date: newFestival.date,
+            description: newFestival.description,
+            hasSpotlight: newFestival.hasSpotlight,
+        };
     }
 };
 exports.FestivalsService = FestivalsService;

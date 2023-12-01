@@ -15,7 +15,7 @@ let Festivals = class Festivals extends sequelize_typescript_1.Model {
 };
 exports.Festivals = Festivals;
 __decorate([
-    (0, sequelize_typescript_1.Column)({ field: 'Id', primaryKey: true, type: sequelize_typescript_1.DataType.CHAR(36) }),
+    (0, sequelize_typescript_1.Column)({ field: 'Id', primaryKey: true, type: sequelize_typescript_1.DataType.CHAR(36), defaultValue: sequelize_typescript_1.Sequelize.literal('CURRENT_TIMESTAMP(6)') }),
     __metadata("design:type", String)
 ], Festivals.prototype, "id", void 0);
 __decorate([

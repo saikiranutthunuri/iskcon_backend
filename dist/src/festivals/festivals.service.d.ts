@@ -1,17 +1,10 @@
 /// <reference types="multer" />
-import { CreateFestivalDto } from './dto/create-festival.dto';
 import { Festivals } from 'src/models/festivals';
+import { CreateFestivalDTO } from 'src/admin/admin.controller';
 export declare class FestivalsService {
     private readonly festivalsRepository;
     private logger;
     constructor(festivalsRepository: typeof Festivals);
-    create(createFestivalDto: CreateFestivalDto): Promise<{
-        id: string;
-        title: string;
-        startDate: Date;
-        endDate: Date;
-        message: string;
-    }>;
     findAll(): Promise<Festivals[]>;
     deleteFestivalById(festivalId: string): Promise<{
         status: boolean;
@@ -25,5 +18,12 @@ export declare class FestivalsService {
     }): Promise<{
         status: boolean;
         statusMessage: string;
+    }>;
+    createFestival(createFestivalDTO: CreateFestivalDTO): Promise<{
+        id: string;
+        name: string;
+        date: Date;
+        description: string;
+        hasSpotlight: number;
     }>;
 }

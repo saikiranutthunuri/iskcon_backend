@@ -94,7 +94,7 @@ export class calenderEvents
   @Column({ field: 'HasEvent', allowNull: true, type: DataType.TINYINT })
   hasEvent?: number;
 
-  @Column({ field: 'HasSpotlight', allowNull: true, type: DataType.TINYINT })
+  @Column({ field: 'HasSpotlight', allowNull: true, type: DataType.TINYINT  })
   hasSpotlight?: number;
 
   @Column({ field: 'SpotlightId', allowNull: true, type: DataType.CHAR(36) })

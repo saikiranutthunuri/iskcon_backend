@@ -36,6 +36,6 @@ export class FestivalsController {
   async create(@UploadedFile() file, createFestivalDto: CreateFestivalDto): Promise<any> {
     createFestivalDto.file = file; // Attach the file to the DTO
 
-    return this.festivalsService.create(createFestivalDto);
+    // return this.festivalsService.create(createFestivalDto);
   }
 }

@@ -1,7 +1,10 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
-import { CreateFestivalDto } from './dto/create-festival.dto';
+
 import { Festivals } from 'src/models/festivals';
 import { v4 as uuidv4 } from 'uuid';
+
+import { FestivalAttributes } from 'src/models/festivals';
+import { CreateFestivalDTO } from 'src/admin/admin.controller';
 
 @Injectable()
 export class FestivalsService {
@@ -12,37 +15,6 @@ export class FestivalsService {
     private readonly festivalsRepository: typeof Festivals,
   ) {}
 
-  async create(createFestivalDto: CreateFestivalDto): Promise<{ id: string; title: string; startDate: Date; endDate: Date; message: string }> {
-    try {
-      // Assuming you handle the file upload logic separately
-
-      const { title, file, startDate, endDate } = createFestivalDto;
-
-      // Save the festival details to the database
-      const newFestival = await this.festivalsRepository.create({
-        id: uuidv4(),
-        title: title,
-        file: file, // Adjust based on your file handling logic
-        startDate: startDate,
-        endDate: endDate,
-      });
-
-      this.logger.debug('Festival created successfully', newFestival);
-
-      return {
-        id: newFestival.id,
-        title: newFestival.title,
-        startDate: newFestival.startDate,
-        endDate: newFestival.endDate,
-        message: 'Festival created successfully',
-      };
-    } catch (error) {
-      this.logger.error(error.message);
-
-      // Handle the error appropriately (logging, returning an error response, etc.)
-      throw new Error('Failed to create Festival');
-    }
-  }
 
   async findAll(): Promise<Festivals[]> {
     try {
@@ -115,6 +87,56 @@ export class FestivalsService {
       throw new Error('Failed to update Festival');
     }
   }
+
+async createFestival(createFestivalDTO: CreateFestivalDTO) {
+  const festivalId = uuidv4(); // Generate a unique ID for the festival
+
+  // Check if hasSpotlight is provided and valid
+  if (
+    createFestivalDTO.hasSpotlight !== undefined &&
+    createFestivalDTO.hasSpotlight !== null &&
+    ![0, 1].includes(createFestivalDTO.hasSpotlight)
+  ) {
+    throw new Error('Invalid value for hasSpotlight. Only 0 or 1 are allowed.');
+  }
+
+  // If hasSpotlight is 1, an image is required
+  if (createFestivalDTO.hasSpotlight === 1 && !createFestivalDTO.eventImage) {
+    throw new Error('Image is required for festivals with Spotlight.');
+  }
+
+  // Create a new festival instance with default value 0 for hasSpotlight
+  const newFestival = new this.festivalsRepository({
+    id: festivalId,
+    name: createFestivalDTO.name,
+    date: createFestivalDTO.date,
+    description: createFestivalDTO.description,
+    hasSpotlight: createFestivalDTO.hasSpotlight || 0,
+    eventImage: createFestivalDTO.hasSpotlight ? createFestivalDTO.eventImage.buffer : undefined,
+    // Add other properties as needed
+  });
+
+  // Save the new festival to the database
+  await newFestival.save();
+
+  // Return the created festival without relying on the model
+  return {
+    id: newFestival.id,
+    name: newFestival.name,
+    date: newFestival.date,
+    description: newFestival.description,
+    hasSpotlight: newFestival.hasSpotlight,
+    // Add other properties as needed
+  };
+}
+
+
+
+
+
+
+
+
 
 
 }

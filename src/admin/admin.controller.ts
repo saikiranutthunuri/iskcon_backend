@@ -30,7 +30,7 @@ import {
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, isNumber } from 'class-validator';
 import { AudioChantService } from 'src/audio-chant/audio-chant.service';
 import { DonationsService } from 'src/donations/donations.service';
 import { NonFunctionalDaysService } from 'src/non-functional-days/non-functional-days.service';
@@ -40,11 +40,45 @@ import { TickerTextService } from 'src/ticker-texts/ticker-texts.service';
 import { LiveStreamsService } from 'src/live-streams/live-streams.service';
 import { sevas } from 'src/models';
 import { extname } from 'path';
+import { FestivalAttributes } from 'src/models/festivals';
 
 
 // import { CreateFestivalDto } from 'src/festivals/dto/create-festival.dto';
  import { FestivalsService } from 'src/festivals/festivals.service';
 
+
+export class CreateFestivalDTO {
+  @ApiProperty({ description: 'Name of the festival' })
+  @IsNotEmpty({ message: 'Name is required' })
+  @IsString({ message: 'Name must be a string' })
+  name: string;
+
+  @ApiProperty({ description: 'Date of the festival', required: true })
+  @IsNotEmpty({ message: 'Date is required' })
+  @IsDate({ message: 'Date must be a valid date' })
+  date: Date;
+
+  @ApiProperty({ description: 'Description of the festival', required: false })
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty({
+    description: 'Flag to indicate if the festival has spotlight (1 for true, 0 for false)',
+    required: false,
+  })
+  @IsOptional()
+  @IsInt({ message: 'hasSpotlight must be a number' })
+  hasSpotlight?: number;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Image file for the festival (required if hasSpotlight is true)',
+    required: false,
+  })
+  @IsOptional()
+  eventImage?: Express.Multer.File;
+}
 
 
 export class CreateDonationDTO {
@@ -202,21 +236,7 @@ export class SevaDTO {
   actionType: number;
 }
 
-export  class CreateFestivalDto {
-  @ApiProperty({ type: 'string',  description: 'id' })
-  id: string;
-  @ApiProperty({ type: 'string', format: 'binary', description: 'Image file' })
-  file: string;
 
-  @ApiProperty({ type: 'string', description: 'Title of the festival' })
-  title: string;
-
-  @ApiProperty({ type: 'string', format: 'date-time', description: 'Start date of the festival' })
-  startDate: Date;
-
-  @ApiProperty({ type: 'string', format: 'date-time', description: 'End date of the festival' })
-  endDate: Date;
-}
 
 export class CreateSevasDTO {
   @ApiProperty({ description: 'Name of the seva' })
@@ -425,98 +445,7 @@ export class AdminController {
 
 
 
- 
-  
-
-  @Get("/donations/getDonations")
-  @ApiOperation({summary:"Gets all donations"})
-  GetAllDonationsMethod(@Req() request: Request) {
-    return this.donationsService.findDonations()
-  }
-
-  @Get("/donations/getDonation/:donationId")
-  @ApiOperation({summary: "Gets donation from donationId"})
-  GetDonationsByDonationIdMethod(@Req() request:Request,@Param("donationId") donationId:string) {
-    return this.donationsService.findDonationByDonationId(donationId).then( result => {
-      if(!result) {
-        return new HttpException("Donation not found", HttpStatus.NOT_FOUND)
-      }
-      return result
-    })
-  }
-
-  @Delete("/donations/deleteDonation/:donationId")
-  @ApiParam({ name: 'donationId', description: 'ID of the Donation', type: 'string' })
-  @ApiOperation({summary: "Delete  donation from donationId"})
-  DeleteDonation(@Req() request:Request, @Param("donationId") donationId:any) {
-    return this.donationsService.deleteDonation(donationId)
-  }
-
-  @Get("/sevas/getSevas")
-  @ApiOperation({summary:"Gets all sevas"})
-  GetAllSevasMethod(@Req() request: Request) {
-    return this.sevasService.findSevas()
-  }
-
-  @Get("/sevas/getSeva/:sevaId")
-  @ApiOperation({summary: "Gets seva from sevaId"})
-  GetSevasBySevaIdMethod(@Req() request:Request,@Param("sevaId") sevaId:string) {
-    return this.sevasService.findSevaBySevaId(sevaId).then( result => {
-      if(!result) {
-        return new HttpException("Donation not found", HttpStatus.NOT_FOUND)
-      }
-      return result
-    })
-  }
-
-  @Delete("/sevas/deleteSeva/:sevaId")
-  @ApiParam({ name: 'sevaId', description: 'ID of the Seva', type: 'string' })
-  @ApiOperation({summary: "Delete  seva from sevaId"})
-  DeleteSevaMethod(@Req() request:Request, @Param("sevaId") sevaId:any) {
-    return this.sevasService.deleteSeva(sevaId)
-  }
-
-
-  @Get("/festivals/getFestival/:festivalId")
-  GetFestivalMethod(@Req() request:Request) {
-    return
-  }
-
-    @Get('/festivals/getAllFestivals')
-  @ApiOperation({ summary: 'Gets all festivals' })
-  async getAllFestivals(): Promise<{ status: boolean; statusMessage: string; data: any[] }> {
-    try {
-      const festivalsList = await this.festivalsService.findAll();
-
-      // Log the successful retrieval
-      this.logger.debug('Festivals retrieved successfully', festivalsList);
-
-      return {
-        status: true,
-        statusMessage: 'Festivals retrieved successfully',
-        data: festivalsList,
-      };
-    } catch (error) {
-      // Log and handle the error appropriately
-      this.logger.error(error.message);
-
-      // Return an error response or rethrow the error depending on your requirements
-      throw new HttpException('Failed to retrieve Festivals', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  @Delete('/festivals/deleteFestival/:festivalId')
-  @ApiOperation({ summary: 'Delete festival by ID' })
-  async deleteFestival(@Param('festivalId') festivalId: string): Promise<{ status: boolean; statusMessage: string }> {
-    try {
-      const result = await this.festivalsService.deleteFestivalById(festivalId);
-      return result;
-    } catch (error) {
-      this.logger.error(error.message);
-      throw new HttpException('Failed to delete Festival', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
+  // notifications
   @Get('/getNotificationAndUpdates')
   GetNotificationAndUpdatesMethod() {
     return;
@@ -532,6 +461,10 @@ export class AdminController {
       },
     },
   })
+
+
+// create audio chant
+
 @Post('/createAudioChant')
 @ApiConsumes("multipart/formdata")
 @ApiOperation({ summary: "Creates an audio chant" })
@@ -574,8 +507,7 @@ CreateAudioChantMethod(
 }
 
 
-  
-
+// DID's
   @Get('getAllDidTransactions')
   GetAllDidTransactions() {
     return;
@@ -586,6 +518,8 @@ CreateAudioChantMethod(
     return;
   }
 
+
+  // livestream
   @Post('/createLiveStream')
   @ApiOperation({ summary: 'Create a Live Stream' })
   @ApiBody({ type: CreateLiveStreamDTO })
@@ -603,93 +537,7 @@ CreateAudioChantMethod(
 
 
 
-
-@Post('festivals/createfestival')
-@UseInterceptors(FileInterceptor('file'))
-@ApiConsumes('multipart/form-data')
-@ApiBody({
-  type: CreateFestivalDto,
-  description: 'Festival details with file upload',
-})
-async create(@UploadedFile() file, @Body() createFestivalDto: CreateFestivalDto): Promise<any> {
-  try {
-    console.log('Create Festival DTO:', createFestivalDto); // Add this line for debugging
-
-    if (!createFestivalDto) {
-      throw new Error('DTO is undefined.');
-    }
-
-    if (!file) {
-      throw new Error('File upload failed or file is missing.');
-    }
-
-    if (!this.isValidImageFile(file)) {
-      throw new Error('Invalid file type. Only PNG and JPEG files are allowed.');
-    }
-
-    // Attach the file to the DTO if everything is valid
-    createFestivalDto.file = file;
-    
-
-    console.log('Create Festival DTO after attaching file:', createFestivalDto); // Add this line for debugging
-
-    return this.festivalsService.create(createFestivalDto);
-  } catch (error) {
-    // Log the error and handle it appropriately
-    console.error(error.message);
-
-    // Return an error response or rethrow the error depending on your requirements
-    throw new Error('Failed to create Festival');
-  }
-}
-
-
-private isValidImageFile(file: Express.Multer.File): boolean {
-  const allowedExtensions = ['.png', '.jpeg', '.jpg'];
-  const fileExtension = extname(file.originalname).toLowerCase();
-  return allowedExtensions.includes(fileExtension);
-}
-
-@Put('/festivals/updateFestival/:festivalId')
-  @ApiOperation({ summary: 'Update a festival with image upload' })
-  @ApiParam({ name: 'festivalId', description: 'ID of the Festival', type: 'string' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        title: { type: 'string' },
-        startDate: { type: 'string', format: 'date-time' },
-        endDate: { type: 'string', format: 'date-time' },
-        file: { type: 'string', format: 'binary' },
-      },
-    },
-  })
-  @UseInterceptors(FileInterceptor('file'))
-  async updateFestival(
-    @Param('festivalId') festivalId: string,
-    @Body() updatedData: {
-      title?: string;
-      startDate?: Date;
-      endDate?: Date;
-      file?: Express.Multer.File;
-    },
-  ): Promise<{ status: boolean; statusMessage: string }> {
-    try {
-      const result = await this.festivalsService.updateFestivalById(festivalId, updatedData);
-      return result;
-    } catch (error) {
-      this.logger.error(error.message);
-      throw new HttpException('Failed to update Festival', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-
-
-
-
-
-
+// DOnations
 
 
 @Post('donations/createDonation')
@@ -733,6 +581,35 @@ async updateDonation(
 }
 
 
+@Get("/donations/getDonations")
+  @ApiOperation({summary:"Gets all donations"})
+  GetAllDonationsMethod(@Req() request: Request) {
+    return this.donationsService.findDonations()
+  }
+
+@Get("/donations/getDonation/:donationId")
+  @ApiOperation({summary: "Gets donation from donationId"})
+  GetDonationsByDonationIdMethod(@Req() request:Request,@Param("donationId") donationId:string) {
+    return this.donationsService.findDonationByDonationId(donationId).then( result => {
+      if(!result) {
+        return new HttpException("Donation not found", HttpStatus.NOT_FOUND)
+      }
+      return result
+    })
+  }
+
+@Delete("/donations/deleteDonation/:donationId")
+  @ApiParam({ name: 'donationId', description: 'ID of the Donation', type: 'string' })
+  @ApiOperation({summary: "Delete  donation from donationId"})
+  DeleteDonation(@Req() request:Request, @Param("donationId") donationId:any) {
+    return this.donationsService.deleteDonation(donationId)
+  }
+
+
+
+// sevas
+
+
   @Post('sevas/createSeva')
   @ApiOperation({ summary: 'Create a new seva' })
   @ApiConsumes('multipart/form-data')
@@ -759,6 +636,8 @@ async updateDonation(
     description: 'Partial Seva details for update',
     type: UpdateSevaDTO,
   })
+
+
   @UseInterceptors(FileInterceptor('sevaImage'))
   async updateSeva(
     @Param('sevaId') sevaId: string,
@@ -772,6 +651,102 @@ async updateDonation(
   }
 
 
+    @Get("/sevas/getSevas")
+  @ApiOperation({summary:"Gets all sevas"})
+  GetAllSevasMethod(@Req() request: Request) {
+    return this.sevasService.findSevas()
+  }
+
+  @Get("/sevas/getSeva/:sevaId")
+  @ApiOperation({summary: "Gets seva from sevaId"})
+  GetSevasBySevaIdMethod(@Req() request:Request,@Param("sevaId") sevaId:string) {
+    return this.sevasService.findSevaBySevaId(sevaId).then( result => {
+      if(!result) {
+        return new HttpException("Donation not found", HttpStatus.NOT_FOUND)
+      }
+      return result
+    })
+  }
+
+  @Delete("/sevas/deleteSeva/:sevaId")
+  @ApiParam({ name: 'sevaId', description: 'ID of the Seva', type: 'string' })
+  @ApiOperation({summary: "Delete  seva from sevaId"})
+  DeleteSevaMethod(@Req() request:Request, @Param("sevaId") sevaId:any) {
+    return this.sevasService.deleteSeva(sevaId)
+  }
+
+  
+
+// festivals
+
+
+
+
+
+
+
+ @Post('/festivals/createFestival')
+  @ApiOperation({ summary: 'Create a new festival' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Festival details',
+    type: CreateFestivalDTO,
+  })
+  @UseInterceptors(FileInterceptor('eventImage'))
+  async createFestival(
+    @Body() createFestivalDTO: CreateFestivalDTO,
+    @UploadedFile() eventImage: Express.Multer.File,
+  ) {
+    // Access the uploaded file using the eventImage parameter
+    createFestivalDTO.eventImage = eventImage;
+
+    return this.festivalsService.createFestival(createFestivalDTO);
+  }
+
+
+
+
+
+
+  @Get("/festivals/getFestival/:festivalId")
+  GetFestivalMethod(@Req() request:Request) {
+    return
+  }
+
+  @Get('/festivals/getAllFestivals')
+  @ApiOperation({ summary: 'Gets all festivals' })
+  async getAllFestivals(): Promise<{ status: boolean; statusMessage: string; data: any[] }> {
+    try {
+      const festivalsList = await this.festivalsService.findAll();
+
+      // Log the successful retrieval
+      this.logger.debug('Festivals retrieved successfully', festivalsList);
+
+      return {
+        status: true,
+        statusMessage: 'Festivals retrieved successfully',
+        data: festivalsList,
+      };
+    } catch (error) {
+      // Log and handle the error appropriately
+      this.logger.error(error.message);
+
+      // Return an error response or rethrow the error depending on your requirements
+      throw new HttpException('Failed to retrieve Festivals', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Delete('/festivals/deleteFestival/:festivalId')
+  @ApiOperation({ summary: 'Delete festival by ID' })
+  async deleteFestival(@Param('festivalId') festivalId: string): Promise<{ status: boolean; statusMessage: string }> {
+    try {
+      const result = await this.festivalsService.deleteFestivalById(festivalId);
+      return result;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new HttpException('Failed to delete Festival', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
 
 

@@ -5,6 +5,7 @@ import {
   DataType,
   ForeignKey,
   BelongsTo,
+  Sequelize,
 } from 'sequelize-typescript';
 
 export interface FestivalAttributes {
@@ -39,7 +40,7 @@ export class Festivals
   extends Model<FestivalAttributes>
   implements FestivalAttributes
 {
-  @Column({ field: 'Id', primaryKey: true, type: DataType.CHAR(36) })
+  @Column({ field: 'Id', primaryKey: true, type: DataType.CHAR(36) , defaultValue: Sequelize.literal('CURRENT_TIMESTAMP(6)')})
   id!: string;
 
   @Column({ field: 'Title', type: DataType.STRING })

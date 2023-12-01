@@ -31,7 +31,7 @@ export declare class PasswordUpdateDTO {
 export declare class AuthenticationController {
     private readonly authService;
     constructor(authService: AuthenticationService);
-    signUp(signUpDto: SignUpDto): HttpException | Promise<void | import("../models").users>;
+    signUp(signUpDto: SignUpDto): Promise<void | import("../models").users> | HttpException;
     consentSignup(signInDto: SignInDto): Promise<any>;
     verifyOTP(verifyOTPDto: VerifyOTP): void;
     sendOTP(sendOTPDto: SendOTPDto): void;

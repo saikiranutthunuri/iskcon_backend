@@ -13,7 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var AdminController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdminController = exports.FestivalEventDTO = exports.UpdateSevaDTO = exports.CreateSevasDTO = exports.CreateFestivalDto = exports.SevaDTO = exports.UpdateDonationDTO = exports.CreateDonationDTO = void 0;
+exports.AdminController = exports.FestivalEventDTO = exports.UpdateSevaDTO = exports.CreateSevasDTO = exports.SevaDTO = exports.UpdateDonationDTO = exports.CreateDonationDTO = exports.CreateFestivalDTO = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
@@ -25,8 +25,46 @@ const prompt_filters_service_1 = require("../prompt-filters/prompt-filters.servi
 const sevas_service_1 = require("../sevas/sevas.service");
 const ticker_texts_service_1 = require("../ticker-texts/ticker-texts.service");
 const live_streams_service_1 = require("../live-streams/live-streams.service");
-const path_1 = require("path");
 const festivals_service_1 = require("../festivals/festivals.service");
+class CreateFestivalDTO {
+}
+exports.CreateFestivalDTO = CreateFestivalDTO;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Name of the festival' }),
+    (0, class_validator_1.IsNotEmpty)({ message: 'Name is required' }),
+    (0, class_validator_1.IsString)({ message: 'Name must be a string' }),
+    __metadata("design:type", String)
+], CreateFestivalDTO.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Date of the festival', required: true }),
+    (0, class_validator_1.IsNotEmpty)({ message: 'Date is required' }),
+    (0, class_validator_1.IsDate)({ message: 'Date must be a valid date' }),
+    __metadata("design:type", Date)
+], CreateFestivalDTO.prototype, "date", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Description of the festival', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateFestivalDTO.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Flag to indicate if the festival has spotlight (1 for true, 0 for false)',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)({ message: 'hasSpotlight must be a number' }),
+    __metadata("design:type", Number)
+], CreateFestivalDTO.prototype, "hasSpotlight", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: 'string',
+        format: 'binary',
+        description: 'Image file for the festival (required if hasSpotlight is true)',
+        required: false,
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateFestivalDTO.prototype, "eventImage", void 0);
 class CreateDonationDTO {
 }
 exports.CreateDonationDTO = CreateDonationDTO;
@@ -212,29 +250,6 @@ __decorate([
     (0, class_validator_1.IsNumber)({}, { message: 'ActionType must be a number' }),
     __metadata("design:type", Number)
 ], SevaDTO.prototype, "actionType", void 0);
-class CreateFestivalDto {
-}
-exports.CreateFestivalDto = CreateFestivalDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({ type: 'string', description: 'id' }),
-    __metadata("design:type", String)
-], CreateFestivalDto.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ type: 'string', format: 'binary', description: 'Image file' }),
-    __metadata("design:type", String)
-], CreateFestivalDto.prototype, "file", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ type: 'string', description: 'Title of the festival' }),
-    __metadata("design:type", String)
-], CreateFestivalDto.prototype, "title", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ type: 'string', format: 'date-time', description: 'Start date of the festival' }),
-    __metadata("design:type", Date)
-], CreateFestivalDto.prototype, "startDate", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ type: 'string', format: 'date-time', description: 'End date of the festival' }),
-    __metadata("design:type", Date)
-], CreateFestivalDto.prototype, "endDate", void 0);
 class CreateSevasDTO {
 }
 exports.CreateSevasDTO = CreateSevasDTO;
@@ -410,62 +425,6 @@ let AdminController = AdminController_1 = class AdminController {
     DeletePromptFilterMethod(promptFilterId) {
         return;
     }
-    GetAllDonationsMethod(request) {
-        return this.donationsService.findDonations();
-    }
-    GetDonationsByDonationIdMethod(request, donationId) {
-        return this.donationsService.findDonationByDonationId(donationId).then(result => {
-            if (!result) {
-                return new common_1.HttpException("Donation not found", common_1.HttpStatus.NOT_FOUND);
-            }
-            return result;
-        });
-    }
-    DeleteDonation(request, donationId) {
-        return this.donationsService.deleteDonation(donationId);
-    }
-    GetAllSevasMethod(request) {
-        return this.sevasService.findSevas();
-    }
-    GetSevasBySevaIdMethod(request, sevaId) {
-        return this.sevasService.findSevaBySevaId(sevaId).then(result => {
-            if (!result) {
-                return new common_1.HttpException("Donation not found", common_1.HttpStatus.NOT_FOUND);
-            }
-            return result;
-        });
-    }
-    DeleteSevaMethod(request, sevaId) {
-        return this.sevasService.deleteSeva(sevaId);
-    }
-    GetFestivalMethod(request) {
-        return;
-    }
-    async getAllFestivals() {
-        try {
-            const festivalsList = await this.festivalsService.findAll();
-            this.logger.debug('Festivals retrieved successfully', festivalsList);
-            return {
-                status: true,
-                statusMessage: 'Festivals retrieved successfully',
-                data: festivalsList,
-            };
-        }
-        catch (error) {
-            this.logger.error(error.message);
-            throw new common_1.HttpException('Failed to retrieve Festivals', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    async deleteFestival(festivalId) {
-        try {
-            const result = await this.festivalsService.deleteFestivalById(festivalId);
-            return result;
-        }
-        catch (error) {
-            this.logger.error(error.message);
-            throw new common_1.HttpException('Failed to delete Festival', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     GetNotificationAndUpdatesMethod() {
         return;
     }
@@ -501,42 +460,6 @@ let AdminController = AdminController_1 = class AdminController {
             throw new common_1.HttpException('Failed to create LiveStream', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async create(file, createFestivalDto) {
-        try {
-            console.log('Create Festival DTO:', createFestivalDto);
-            if (!createFestivalDto) {
-                throw new Error('DTO is undefined.');
-            }
-            if (!file) {
-                throw new Error('File upload failed or file is missing.');
-            }
-            if (!this.isValidImageFile(file)) {
-                throw new Error('Invalid file type. Only PNG and JPEG files are allowed.');
-            }
-            createFestivalDto.file = file;
-            console.log('Create Festival DTO after attaching file:', createFestivalDto);
-            return this.festivalsService.create(createFestivalDto);
-        }
-        catch (error) {
-            console.error(error.message);
-            throw new Error('Failed to create Festival');
-        }
-    }
-    isValidImageFile(file) {
-        const allowedExtensions = ['.png', '.jpeg', '.jpg'];
-        const fileExtension = (0, path_1.extname)(file.originalname).toLowerCase();
-        return allowedExtensions.includes(fileExtension);
-    }
-    async updateFestival(festivalId, updatedData) {
-        try {
-            const result = await this.festivalsService.updateFestivalById(festivalId, updatedData);
-            return result;
-        }
-        catch (error) {
-            this.logger.error(error.message);
-            throw new common_1.HttpException('Failed to update Festival', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     async createDonation(createDonationDTO, donationImage) {
         createDonationDTO.donationImage = donationImage ? Uint8Array.from(donationImage.buffer) : null;
         return this.donationsService.createDonation(createDonationDTO);
@@ -546,6 +469,20 @@ let AdminController = AdminController_1 = class AdminController {
         updateDonationDTO.donationImage = donationImage ? Uint8Array.from(donationImage.buffer) : null;
         return this.donationsService.updateDonation(donationId, updateDonationDTO);
     }
+    GetAllDonationsMethod(request) {
+        return this.donationsService.findDonations();
+    }
+    GetDonationsByDonationIdMethod(request, donationId) {
+        return this.donationsService.findDonationByDonationId(donationId).then(result => {
+            if (!result) {
+                return new common_1.HttpException("Donation not found", common_1.HttpStatus.NOT_FOUND);
+            }
+            return result;
+        });
+    }
+    DeleteDonation(request, donationId) {
+        return this.donationsService.deleteDonation(donationId);
+    }
     async createSeva(createSevaDTO, sevaImage) {
         createSevaDTO.sevaImage = sevaImage ? Uint8Array.from(sevaImage.buffer) : null;
         return this.sevasService.createSeva(createSevaDTO);
@@ -554,6 +491,52 @@ let AdminController = AdminController_1 = class AdminController {
         updateSevaDTO.sevaId = sevaId;
         updateSevaDTO.sevaImage = sevaImage ? Uint8Array.from(sevaImage.buffer) : null;
         return this.sevasService.updateSeva(sevaId, updateSevaDTO);
+    }
+    GetAllSevasMethod(request) {
+        return this.sevasService.findSevas();
+    }
+    GetSevasBySevaIdMethod(request, sevaId) {
+        return this.sevasService.findSevaBySevaId(sevaId).then(result => {
+            if (!result) {
+                return new common_1.HttpException("Donation not found", common_1.HttpStatus.NOT_FOUND);
+            }
+            return result;
+        });
+    }
+    DeleteSevaMethod(request, sevaId) {
+        return this.sevasService.deleteSeva(sevaId);
+    }
+    async createFestival(createFestivalDTO, eventImage) {
+        createFestivalDTO.eventImage = eventImage;
+        return this.festivalsService.createFestival(createFestivalDTO);
+    }
+    GetFestivalMethod(request) {
+        return;
+    }
+    async getAllFestivals() {
+        try {
+            const festivalsList = await this.festivalsService.findAll();
+            this.logger.debug('Festivals retrieved successfully', festivalsList);
+            return {
+                status: true,
+                statusMessage: 'Festivals retrieved successfully',
+                data: festivalsList,
+            };
+        }
+        catch (error) {
+            this.logger.error(error.message);
+            throw new common_1.HttpException('Failed to retrieve Festivals', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async deleteFestival(festivalId) {
+        try {
+            const result = await this.festivalsService.deleteFestivalById(festivalId);
+            return result;
+        }
+        catch (error) {
+            this.logger.error(error.message);
+            throw new common_1.HttpException('Failed to delete Festival', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 };
 exports.AdminController = AdminController;
@@ -632,82 +615,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "DeletePromptFilterMethod", null);
 __decorate([
-    (0, common_1.Get)("/donations/getDonations"),
-    (0, swagger_1.ApiOperation)({ summary: "Gets all donations" }),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request]),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "GetAllDonationsMethod", null);
-__decorate([
-    (0, common_1.Get)("/donations/getDonation/:donationId"),
-    (0, swagger_1.ApiOperation)({ summary: "Gets donation from donationId" }),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)("donationId")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request, String]),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "GetDonationsByDonationIdMethod", null);
-__decorate([
-    (0, common_1.Delete)("/donations/deleteDonation/:donationId"),
-    (0, swagger_1.ApiParam)({ name: 'donationId', description: 'ID of the Donation', type: 'string' }),
-    (0, swagger_1.ApiOperation)({ summary: "Delete  donation from donationId" }),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)("donationId")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request, Object]),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "DeleteDonation", null);
-__decorate([
-    (0, common_1.Get)("/sevas/getSevas"),
-    (0, swagger_1.ApiOperation)({ summary: "Gets all sevas" }),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request]),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "GetAllSevasMethod", null);
-__decorate([
-    (0, common_1.Get)("/sevas/getSeva/:sevaId"),
-    (0, swagger_1.ApiOperation)({ summary: "Gets seva from sevaId" }),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)("sevaId")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request, String]),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "GetSevasBySevaIdMethod", null);
-__decorate([
-    (0, common_1.Delete)("/sevas/deleteSeva/:sevaId"),
-    (0, swagger_1.ApiParam)({ name: 'sevaId', description: 'ID of the Seva', type: 'string' }),
-    (0, swagger_1.ApiOperation)({ summary: "Delete  seva from sevaId" }),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Param)("sevaId")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request, Object]),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "DeleteSevaMethod", null);
-__decorate([
-    (0, common_1.Get)("/festivals/getFestival/:festivalId"),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request]),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "GetFestivalMethod", null);
-__decorate([
-    (0, common_1.Get)('/festivals/getAllFestivals'),
-    (0, swagger_1.ApiOperation)({ summary: 'Gets all festivals' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AdminController.prototype, "getAllFestivals", null);
-__decorate([
-    (0, common_1.Delete)('/festivals/deleteFestival/:festivalId'),
-    (0, swagger_1.ApiOperation)({ summary: 'Delete festival by ID' }),
-    __param(0, (0, common_1.Param)('festivalId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], AdminController.prototype, "deleteFestival", null);
-__decorate([
     (0, common_1.Get)('/getNotificationAndUpdates'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -761,43 +668,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "createLiveStream", null);
 __decorate([
-    (0, common_1.Post)('festivals/createfestival'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
-    (0, swagger_1.ApiConsumes)('multipart/form-data'),
-    (0, swagger_1.ApiBody)({
-        type: CreateFestivalDto,
-        description: 'Festival details with file upload',
-    }),
-    __param(0, (0, common_1.UploadedFile)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, CreateFestivalDto]),
-    __metadata("design:returntype", Promise)
-], AdminController.prototype, "create", null);
-__decorate([
-    (0, common_1.Put)('/festivals/updateFestival/:festivalId'),
-    (0, swagger_1.ApiOperation)({ summary: 'Update a festival with image upload' }),
-    (0, swagger_1.ApiParam)({ name: 'festivalId', description: 'ID of the Festival', type: 'string' }),
-    (0, swagger_1.ApiConsumes)('multipart/form-data'),
-    (0, swagger_1.ApiBody)({
-        schema: {
-            type: 'object',
-            properties: {
-                title: { type: 'string' },
-                startDate: { type: 'string', format: 'date-time' },
-                endDate: { type: 'string', format: 'date-time' },
-                file: { type: 'string', format: 'binary' },
-            },
-        },
-    }),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
-    __param(0, (0, common_1.Param)('festivalId')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], AdminController.prototype, "updateFestival", null);
-__decorate([
     (0, common_1.Post)('donations/createDonation'),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new donation' }),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
@@ -830,6 +700,33 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "updateDonation", null);
 __decorate([
+    (0, common_1.Get)("/donations/getDonations"),
+    (0, swagger_1.ApiOperation)({ summary: "Gets all donations" }),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Request]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "GetAllDonationsMethod", null);
+__decorate([
+    (0, common_1.Get)("/donations/getDonation/:donationId"),
+    (0, swagger_1.ApiOperation)({ summary: "Gets donation from donationId" }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)("donationId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Request, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "GetDonationsByDonationIdMethod", null);
+__decorate([
+    (0, common_1.Delete)("/donations/deleteDonation/:donationId"),
+    (0, swagger_1.ApiParam)({ name: 'donationId', description: 'ID of the Donation', type: 'string' }),
+    (0, swagger_1.ApiOperation)({ summary: "Delete  donation from donationId" }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)("donationId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Request, Object]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "DeleteDonation", null);
+__decorate([
     (0, common_1.Post)('sevas/createSeva'),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new seva' }),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
@@ -861,6 +758,70 @@ __decorate([
     __metadata("design:paramtypes", [String, UpdateSevaDTO, Object]),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "updateSeva", null);
+__decorate([
+    (0, common_1.Get)("/sevas/getSevas"),
+    (0, swagger_1.ApiOperation)({ summary: "Gets all sevas" }),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Request]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "GetAllSevasMethod", null);
+__decorate([
+    (0, common_1.Get)("/sevas/getSeva/:sevaId"),
+    (0, swagger_1.ApiOperation)({ summary: "Gets seva from sevaId" }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)("sevaId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Request, String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "GetSevasBySevaIdMethod", null);
+__decorate([
+    (0, common_1.Delete)("/sevas/deleteSeva/:sevaId"),
+    (0, swagger_1.ApiParam)({ name: 'sevaId', description: 'ID of the Seva', type: 'string' }),
+    (0, swagger_1.ApiOperation)({ summary: "Delete  seva from sevaId" }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)("sevaId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Request, Object]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "DeleteSevaMethod", null);
+__decorate([
+    (0, common_1.Post)('/festivals/createFestival'),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new festival' }),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiBody)({
+        description: 'Festival details',
+        type: CreateFestivalDTO,
+    }),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('eventImage')),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CreateFestivalDTO, Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "createFestival", null);
+__decorate([
+    (0, common_1.Get)("/festivals/getFestival/:festivalId"),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Request]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "GetFestivalMethod", null);
+__decorate([
+    (0, common_1.Get)('/festivals/getAllFestivals'),
+    (0, swagger_1.ApiOperation)({ summary: 'Gets all festivals' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "getAllFestivals", null);
+__decorate([
+    (0, common_1.Delete)('/festivals/deleteFestival/:festivalId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete festival by ID' }),
+    __param(0, (0, common_1.Param)('festivalId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "deleteFestival", null);
 exports.AdminController = AdminController = AdminController_1 = __decorate([
     (0, common_1.Controller)('admin'),
     (0, swagger_1.ApiTags)('admin'),

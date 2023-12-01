@@ -43,7 +43,6 @@ let FestivalsController = class FestivalsController {
     }
     async create(file, createFestivalDto) {
         createFestivalDto.file = file;
-        return this.festivalsService.create(createFestivalDto);
     }
 };
 exports.FestivalsController = FestivalsController;

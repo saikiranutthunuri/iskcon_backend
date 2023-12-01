@@ -10,6 +10,13 @@ import { TickerTextService } from 'src/ticker-texts/ticker-texts.service';
 import { LiveStreamsService } from 'src/live-streams/live-streams.service';
 import { sevas } from 'src/models';
 import { FestivalsService } from 'src/festivals/festivals.service';
+export declare class CreateFestivalDTO {
+    name: string;
+    date: Date;
+    description?: string;
+    hasSpotlight?: number;
+    eventImage?: Express.Multer.File;
+}
 export declare class CreateDonationDTO {
     name: string;
     type: number;
@@ -56,13 +63,6 @@ export declare class SevaDTO {
     lastModificationTime?: Date;
     lastModifierId?: string;
     actionType: number;
-}
-export declare class CreateFestivalDto {
-    id: string;
-    file: string;
-    title: string;
-    startDate: Date;
-    endDate: Date;
 }
 export declare class CreateSevasDTO {
     name: string;
@@ -115,12 +115,32 @@ export declare class AdminController {
     CreateTickerTextMethod(request: Request, file: Express.Multer.File, createTickerTextDTO: CreateTickerTextDTO): Promise<void | import("src/models").tickerTexts>;
     PostPromptFilterMethod(request: Request, createPromptFilterDTO: any): Promise<import("src/models").promptFilters>;
     DeletePromptFilterMethod(promptFilterId: string): void;
+    GetNotificationAndUpdatesMethod(): void;
+    CreateAudioChantMethod(request: Request, file: Express.Multer.File, createAudioChantDTO: CreateAudioChantDTO): Promise<void>;
+    GetAllDidTransactions(): void;
+    GetUserMessagesFromUsers(): void;
+    createLiveStream(createLiveStreamDTO: CreateLiveStreamDTO): Promise<{
+        status: boolean;
+        statusMessage: string;
+        data: null;
+    }>;
+    createDonation(createDonationDTO: CreateDonationDTO, donationImage: Express.Multer.File): Promise<import("src/models").donations>;
+    updateDonation(donationId: string, updateDonationDTO: UpdateDonationDTO, donationImage: Express.Multer.File): Promise<import("src/models").donations>;
     GetAllDonationsMethod(request: Request): Promise<import("src/models").donations[]>;
-    GetDonationsByDonationIdMethod(request: Request, donationId: string): Promise<import("src/models").donations | HttpException>;
+    GetDonationsByDonationIdMethod(request: Request, donationId: string): Promise<HttpException | import("src/models").donations>;
     DeleteDonation(request: Request, donationId: any): Promise<number>;
+    createSeva(createSevaDTO: CreateSevasDTO, sevaImage: Express.Multer.File): Promise<sevas>;
+    updateSeva(sevaId: string, updateSevaDTO: UpdateSevaDTO, sevaImage: Express.Multer.File): Promise<sevas>;
     GetAllSevasMethod(request: Request): Promise<sevas[]>;
-    GetSevasBySevaIdMethod(request: Request, sevaId: string): Promise<sevas | HttpException>;
+    GetSevasBySevaIdMethod(request: Request, sevaId: string): Promise<HttpException | sevas>;
     DeleteSevaMethod(request: Request, sevaId: any): Promise<number | void>;
+    createFestival(createFestivalDTO: CreateFestivalDTO, eventImage: Express.Multer.File): Promise<{
+        id: string;
+        name: string;
+        date: Date;
+        description: string;
+        hasSpotlight: number;
+    }>;
     GetFestivalMethod(request: Request): void;
     getAllFestivals(): Promise<{
         status: boolean;
@@ -131,29 +151,5 @@ export declare class AdminController {
         status: boolean;
         statusMessage: string;
     }>;
-    GetNotificationAndUpdatesMethod(): void;
-    CreateAudioChantMethod(request: Request, file: Express.Multer.File, createAudioChantDTO: CreateAudioChantDTO): Promise<void>;
-    GetAllDidTransactions(): void;
-    GetUserMessagesFromUsers(): void;
-    createLiveStream(createLiveStreamDTO: CreateLiveStreamDTO): Promise<{
-        status: boolean;
-        statusMessage: string;
-        data: null;
-    }>;
-    create(file: any, createFestivalDto: CreateFestivalDto): Promise<any>;
-    private isValidImageFile;
-    updateFestival(festivalId: string, updatedData: {
-        title?: string;
-        startDate?: Date;
-        endDate?: Date;
-        file?: Express.Multer.File;
-    }): Promise<{
-        status: boolean;
-        statusMessage: string;
-    }>;
-    createDonation(createDonationDTO: CreateDonationDTO, donationImage: Express.Multer.File): Promise<import("src/models").donations>;
-    updateDonation(donationId: string, updateDonationDTO: UpdateDonationDTO, donationImage: Express.Multer.File): Promise<import("src/models").donations>;
-    createSeva(createSevaDTO: CreateSevasDTO, sevaImage: Express.Multer.File): Promise<sevas>;
-    updateSeva(sevaId: string, updateSevaDTO: UpdateSevaDTO, sevaImage: Express.Multer.File): Promise<sevas>;
 }
 export {};
