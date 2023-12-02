@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Festivals = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 let Festivals = class Festivals extends sequelize_typescript_1.Model {
+    ;
 };
 exports.Festivals = Festivals;
 __decorate([
@@ -107,8 +108,8 @@ __decorate([
     __metadata("design:type", Number)
 ], Festivals.prototype, "hasEvent", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ field: 'HasSpotlight', allowNull: true, type: sequelize_typescript_1.DataType.TINYINT }),
-    __metadata("design:type", Number)
+    (0, sequelize_typescript_1.Column)({ field: 'HasSpotlight', allowNull: true, type: sequelize_typescript_1.DataType.STRING }),
+    __metadata("design:type", String)
 ], Festivals.prototype, "hasSpotlight", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({ field: 'SpotlightId', allowNull: true, type: sequelize_typescript_1.DataType.CHAR(36) }),

@@ -43,12 +43,12 @@ __decorate([
     __metadata("design:type", Date)
 ], calenderEvents.prototype, "date", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ field: 'HasDonation', allowNull: true, type: sequelize_typescript_1.DataType.TINYINT, defaultValue: "0" }),
-    __metadata("design:type", Number)
+    (0, sequelize_typescript_1.Column)({ field: 'HasDonation', allowNull: true, type: sequelize_typescript_1.DataType.STRING }),
+    __metadata("design:type", String)
 ], calenderEvents.prototype, "hasDonation", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ field: 'HasSeva', allowNull: true, type: sequelize_typescript_1.DataType.TINYINT, defaultValue: "0" }),
-    __metadata("design:type", Number)
+    (0, sequelize_typescript_1.Column)({ field: 'HasSeva', allowNull: true, type: sequelize_typescript_1.DataType.STRING }),
+    __metadata("design:type", String)
 ], calenderEvents.prototype, "hasSeva", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({ field: 'DonationId', allowNull: true, type: sequelize_typescript_1.DataType.CHAR(36) }),
@@ -87,12 +87,12 @@ __decorate([
     __metadata("design:type", String)
 ], calenderEvents.prototype, "eventId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ field: 'HasEvent', allowNull: true, type: sequelize_typescript_1.DataType.TINYINT }),
-    __metadata("design:type", Number)
+    (0, sequelize_typescript_1.Column)({ field: 'HasEvent', allowNull: true, type: sequelize_typescript_1.DataType.STRING }),
+    __metadata("design:type", String)
 ], calenderEvents.prototype, "hasEvent", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ field: 'HasSpotlight', allowNull: true, type: sequelize_typescript_1.DataType.TINYINT }),
-    __metadata("design:type", Number)
+    (0, sequelize_typescript_1.Column)({ field: 'HasSpotlight', allowNull: true, type: sequelize_typescript_1.DataType.STRING }),
+    __metadata("design:type", String)
 ], calenderEvents.prototype, "hasSpotlight", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({ field: 'SpotlightId', allowNull: true, type: sequelize_typescript_1.DataType.CHAR(36) }),

@@ -23,7 +23,7 @@ export interface FestivalAttributes {
     lastModifierId?: string;
     eventId?: string;
     hasEvent?: number;
-    hasSpotlight?: number;
+    hasSpotlight?: string;
     spotlightId?: string;
 }
 export declare class Festivals extends Model<FestivalAttributes> implements FestivalAttributes {
@@ -49,6 +49,6 @@ export declare class Festivals extends Model<FestivalAttributes> implements Fest
     lastModifierId?: string;
     eventId?: string;
     hasEvent?: number;
-    hasSpotlight?: number;
+    hasSpotlight?: string;
     spotlightId?: string;
 }

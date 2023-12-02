@@ -16,6 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FestivalsService = void 0;
 const common_1 = require("@nestjs/common");
 const uuid_1 = require("uuid");
+const sharp = require("sharp");
 let FestivalsService = FestivalsService_1 = class FestivalsService {
     constructor(festivalsRepository) {
         this.festivalsRepository = festivalsRepository;
@@ -54,12 +55,6 @@ let FestivalsService = FestivalsService_1 = class FestivalsService {
             if (!existingFestival) {
                 return { status: false, statusMessage: 'Festival not found' };
             }
-            existingFestival.title = updatedData.title || existingFestival.title;
-            existingFestival.startDate = updatedData.startDate || existingFestival.startDate;
-            existingFestival.endDate = updatedData.endDate || existingFestival.endDate;
-            if (updatedData.file) {
-                existingFestival.file = updatedData.file.buffer;
-            }
             await existingFestival.save();
             this.logger.debug('Festival updated successfully');
             return { status: true, statusMessage: 'Festival updated successfully' };
@@ -77,13 +72,16 @@ let FestivalsService = FestivalsService_1 = class FestivalsService {
     async createFestival(createFestivalDTO) {
         try {
             const festivalId = (0, uuid_1.v4)();
+            const optimizedImageBuffer = await sharp(createFestivalDTO.eventImage.buffer)
+                .resize({ width: 800 })
+                .toBuffer();
             const newFestival = new this.festivalsRepository({
                 id: festivalId,
                 name: createFestivalDTO.name,
                 date: createFestivalDTO.date,
                 description: createFestivalDTO.description,
-                hasSpotlight: createFestivalDTO.hasSpotlight || 0,
-                eventImage: createFestivalDTO.eventImage ? createFestivalDTO.eventImage.buffer : undefined,
+                hasSpotlight: createFestivalDTO.hasSpotlight,
+                eventImage: createFestivalDTO.eventImage ? optimizedImageBuffer : undefined,
                 hasSeva: createFestivalDTO.hasSeva,
                 sevaId: createFestivalDTO.sevaId,
                 hasDonation: createFestivalDTO.hasDonation,

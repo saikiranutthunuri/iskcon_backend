@@ -7,8 +7,8 @@ export interface calenderEventsAttributes {
     eventImage?: Uint8Array;
     bannerImage?: Uint8Array;
     date?: Date;
-    hasDonation?: number;
-    hasSeva?: number;
+    hasDonation?: string;
+    hasSeva?: string;
     donationId?: string;
     sevaId?: string;
     concurrencyStamp: string;
@@ -17,8 +17,8 @@ export interface calenderEventsAttributes {
     lastModificationTime?: Date;
     lastModifierId?: string;
     eventId?: string;
-    hasEvent?: number;
-    hasSpotlight?: number;
+    hasEvent?: string;
+    hasSpotlight?: string;
     spotlightId?: string;
 }
 export declare class calenderEvents extends Model<calenderEventsAttributes, calenderEventsAttributes> implements calenderEventsAttributes {
@@ -29,8 +29,8 @@ export declare class calenderEvents extends Model<calenderEventsAttributes, cale
     eventImage?: Uint8Array;
     bannerImage?: Uint8Array;
     date?: Date;
-    hasDonation?: number;
-    hasSeva?: number;
+    hasDonation?: string;
+    hasSeva?: string;
     donationId?: string;
     sevaId?: string;
     concurrencyStamp: string;
@@ -39,7 +39,7 @@ export declare class calenderEvents extends Model<calenderEventsAttributes, cale
     lastModificationTime?: Date;
     lastModifierId?: string;
     eventId?: string;
-    hasEvent?: number;
-    hasSpotlight?: number;
+    hasEvent?: string;
+    hasSpotlight?: string;
     spotlightId?: string;
 }

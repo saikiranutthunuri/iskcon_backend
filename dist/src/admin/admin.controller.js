@@ -13,7 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var AdminController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AdminController = exports.FestivalEventDTO = exports.UpdateSevaDTO = exports.CreateSevasDTO = exports.SevaDTO = exports.UpdateDonationDTO = exports.CreateDonationDTO = exports.CreateFestivalDTO = void 0;
+exports.AdminController = exports.FestivalEventDTO = exports.UpdateSevaDTO = exports.CreateSevasDTO = exports.SevaDTO = exports.UpdateDonationDTO = exports.CreateDonationDTO = exports.UpdateFestivalDTO = exports.CreateFestivalDTO = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
@@ -48,12 +48,12 @@ __decorate([
 ], CreateFestivalDTO.prototype, "description", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'Flag to indicate if the festival has spotlight (1 for true, 0 for false)',
+        description: 'Flag to indicate if the festival has spotlight (it must be true or false)',
         required: false,
     }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsInt)({ message: 'hasSpotlight must be a number' }),
-    __metadata("design:type", Number)
+    (0, class_validator_1.IsString)({ message: 'it must be true or false' }),
+    __metadata("design:type", String)
 ], CreateFestivalDTO.prototype, "hasSpotlight", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
@@ -66,27 +66,42 @@ __decorate([
     __metadata("design:type", Object)
 ], CreateFestivalDTO.prototype, "eventImage", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Flag indicating if Seva is associated', required: false }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Flag to indicate if the festival has Seva (it must be true or false)',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
+    (0, class_validator_1.IsString)({ message: 'it must be true or false' }),
+    __metadata("design:type", String)
 ], CreateFestivalDTO.prototype, "hasSeva", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Seva ID', required: false }),
+    (0, swagger_1.ApiProperty)({ description: 'ID of the Seva', required: false }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNotEmpty)({ message: 'Seva ID is required when hasSeva is 1' }),
     __metadata("design:type", String)
 ], CreateFestivalDTO.prototype, "sevaId", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Flag indicating if Donation is associated', required: false }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Flag to indicate if the festival has Donation (it must be true or false)',
+        required: false,
+    }),
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Number)
+    (0, class_validator_1.IsString)({ message: 'it must be true or false' }),
+    __metadata("design:type", String)
 ], CreateFestivalDTO.prototype, "hasDonation", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Donation ID', required: false }),
+    (0, swagger_1.ApiProperty)({ description: 'ID of the Donation', required: false }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNotEmpty)({ message: 'Donation ID is required when hasDonation is 1' }),
     __metadata("design:type", String)
 ], CreateFestivalDTO.prototype, "donationId", void 0);
+class UpdateFestivalDTO extends CreateFestivalDTO {
+}
+exports.UpdateFestivalDTO = UpdateFestivalDTO;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'ID of the festival', required: true }),
+    (0, class_validator_1.IsNotEmpty)({ message: 'ID is required' }),
+    (0, class_validator_1.IsString)({ message: 'ID must be a string' }),
+    __metadata("design:type", String)
+], UpdateFestivalDTO.prototype, "id", void 0);
 class CreateDonationDTO {
 }
 exports.CreateDonationDTO = CreateDonationDTO;
@@ -529,31 +544,41 @@ let AdminController = AdminController_1 = class AdminController {
         return this.sevasService.deleteSeva(sevaId);
     }
     async createFestival(createFestivalDTO, eventImage) {
+        createFestivalDTO.eventImage = eventImage;
+        const hasSpotlightCheck = createFestivalDTO.hasSpotlight;
+        const hasSevaCheck = createFestivalDTO.hasSeva;
+        const hasDonationCheck = createFestivalDTO.hasDonation;
+        const imagedata = createFestivalDTO.eventImage;
+        console.log(imagedata);
         try {
-            createFestivalDTO.eventImage = eventImage;
-            console.log('hasDonation:', createFestivalDTO.hasDonation);
-            console.log('hasSeva:', createFestivalDTO.hasSeva);
-            console.log('sevaId:', createFestivalDTO.sevaId);
-            console.log('donationId:', createFestivalDTO.donationId);
-            console.log('eventImage:', createFestivalDTO.eventImage);
-            if (createFestivalDTO.hasSpotlight === 1 || !createFestivalDTO.eventImage) {
-                throw new Error('Image is required for festivals with Spotlight.');
+            if (hasSpotlightCheck === 'true') {
+                if (!createFestivalDTO.eventImage) {
+                    throw new common_1.BadRequestException('Event image is required when hasSpotlight is true.');
+                }
             }
-            if (createFestivalDTO.hasSeva === 1 || createFestivalDTO.sevaId === undefined) {
-                throw new Error('Seva ID is required when hasSeva is 1.');
+            else if (hasSpotlightCheck !== 'false') {
+                throw new common_1.BadRequestException('Invalid value for hasSpotlight. Only true or false are allowed.');
             }
-            if (createFestivalDTO.hasDonation === 1 || createFestivalDTO.donationId === undefined) {
-                throw new Error('Donation ID is required when hasDonation is 1.');
+            if (hasSevaCheck === 'true') {
+                if (!createFestivalDTO.sevaId) {
+                    throw new common_1.BadRequestException('Seva ID is required when hasSeva is true.');
+                }
             }
-            const result = await this.festivalsService.createFestival(createFestivalDTO);
-            return {
-                status: true,
-                statusMessage: 'Festival created successfully',
-                data: result,
-            };
+            else if (hasSevaCheck !== 'false') {
+                throw new common_1.BadRequestException('Invalid value for hasSeva. Only true or false are allowed.');
+            }
+            if (hasDonationCheck === 'true') {
+                if (!createFestivalDTO.donationId) {
+                    throw new common_1.BadRequestException('Donation ID is required when hasDonation is true.');
+                }
+            }
+            else if (hasDonationCheck !== 'false') {
+                throw new common_1.BadRequestException('Invalid value for hasDonation. Only true or false are allowed.');
+            }
+            return this.festivalsService.createFestival(createFestivalDTO);
         }
         catch (error) {
-            console.error('Error creating festival:', error.message);
+            this.logger.error(error.message);
             throw new common_1.HttpException('Failed to create Festival', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

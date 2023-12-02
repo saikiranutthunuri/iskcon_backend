@@ -19,6 +19,7 @@ import {
   UseInterceptors,
   UsePipes,
   ValidationPipe,
+  BadRequestException
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -40,7 +41,7 @@ import { TickerTextService } from 'src/ticker-texts/ticker-texts.service';
 import { LiveStreamsService } from 'src/live-streams/live-streams.service';
 import { sevas } from 'src/models';
 import { extname } from 'path';
-import { FestivalAttributes } from 'src/models/festivals';
+
 
 
 // import { CreateFestivalDto } from 'src/festivals/dto/create-festival.dto';
@@ -63,12 +64,12 @@ export class CreateFestivalDTO {
   description?: string;
 
   @ApiProperty({
-    description: 'Flag to indicate if the festival has spotlight (1 for true, 0 for false)',
+    description: 'Flag to indicate if the festival has spotlight (it must be true or false)',
     required: false,
   })
   @IsOptional()
-  @IsInt({ message: 'hasSpotlight must be a number' })
-  hasSpotlight?: number;
+  @IsString({ message: 'it must be true or false' })
+  hasSpotlight?: string;
 
   @ApiProperty({
     type: 'string',
@@ -79,23 +80,38 @@ export class CreateFestivalDTO {
   @IsOptional()
   eventImage?: Express.Multer.File;
 
-  @ApiProperty({ description: 'Flag indicating if Seva is associated', required: false })
+  // New properties for Seva and Donation
+  @ApiProperty({
+    description: 'Flag to indicate if the festival has Seva (it must be true or false)',
+    required: false,
+  })
   @IsOptional()
-  hasSeva?: number;
+  @IsString({ message: 'it must be true or false' })
+  hasSeva?: string;
 
-  @ApiProperty({ description: 'Seva ID', required: false })
+  @ApiProperty({ description: 'ID of the Seva', required: false })
   @IsOptional()
-  @IsNotEmpty({ message: 'Seva ID is required when hasSeva is 1' })
   sevaId?: string;
 
-  @ApiProperty({ description: 'Flag indicating if Donation is associated', required: false })
+  @ApiProperty({
+    description: 'Flag to indicate if the festival has Donation (it must be true or false)',
+    required: false,
+  })
   @IsOptional()
-  hasDonation?: number;
+  @IsString({ message: 'it must be true or false' })
+  hasDonation?: string;
 
-  @ApiProperty({ description: 'Donation ID', required: false })
+  @ApiProperty({ description: 'ID of the Donation', required: false })
   @IsOptional()
-  @IsNotEmpty({ message: 'Donation ID is required when hasDonation is 1' })
   donationId?: string;
+}
+
+
+export class UpdateFestivalDTO extends CreateFestivalDTO {
+  @ApiProperty({ description: 'ID of the festival', required: true })
+  @IsNotEmpty({ message: 'ID is required' })
+  @IsString({ message: 'ID must be a string' })
+  id: string;
 }
 
 
@@ -700,9 +716,6 @@ async updateDonation(
 
 
 
-
-
-
 @Post('/festivals/createFestival')
 @ApiOperation({ summary: 'Create a new festival' })
 @ApiConsumes('multipart/form-data')
@@ -715,54 +728,84 @@ async createFestival(
   @Body() createFestivalDTO: CreateFestivalDTO,
   @UploadedFile() eventImage: Express.Multer.File,
 ) {
+  // Access the uploaded file using the eventImage parameter
+  createFestivalDTO.eventImage = eventImage;
+  const hasSpotlightCheck = createFestivalDTO.hasSpotlight;
+  const hasSevaCheck = createFestivalDTO.hasSeva;
+  const hasDonationCheck = createFestivalDTO.hasDonation;
+
+  const imagedata = createFestivalDTO.eventImage;
+
+  console.log(imagedata)
+
   try {
-    // Access the uploaded file using the eventImage parameter
-    createFestivalDTO.eventImage = eventImage;
+    // Check the hasSpotlight value and handle accordingly
+    if (hasSpotlightCheck === 'true') {
+      // If hasSpotlight is true, check if eventImage is provided
+      if (!createFestivalDTO.eventImage) {
+        throw new BadRequestException('Event image is required when hasSpotlight is true.');
+      }
+    } else if (hasSpotlightCheck !== 'false') {
+      // Throw a BadRequestException for invalid values of hasSpotlight
+      throw new BadRequestException('Invalid value for hasSpotlight. Only true or false are allowed.');
+    }
 
-    // Log the input parameters
-    console.log('hasDonation:', createFestivalDTO.hasDonation);
-    console.log('hasSeva:', createFestivalDTO.hasSeva);
-    console.log('sevaId:', createFestivalDTO.sevaId);
-    console.log('donationId:', createFestivalDTO.donationId);
-    console.log('eventImage:', createFestivalDTO.eventImage);
+    // Check the hasSeva value and handle accordingly
+    if (hasSevaCheck === 'true') {
+      // If hasSeva is true, check if sevaId is provided
+      if (!createFestivalDTO.sevaId) {
+        throw new BadRequestException('Seva ID is required when hasSeva is true.');
+      }
+    } else if (hasSevaCheck !== 'false') {
+      // Throw a BadRequestException for invalid values of hasSeva
+      throw new BadRequestException('Invalid value for hasSeva. Only true or false are allowed.');
+    }
 
-    // Check if hasSpotlight is 1, an image is required
-if (createFestivalDTO.hasSpotlight === 1 || !createFestivalDTO.eventImage) {
-  throw new Error('Image is required for festivals with Spotlight.');
-}
+    // Check the hasDonation value and handle accordingly
+    if (hasDonationCheck === 'true') {
+      // If hasDonation is true, check if donationId is provided
+      if (!createFestivalDTO.donationId) {
+        throw new BadRequestException('Donation ID is required when hasDonation is true.');
+      }
+    } else if (hasDonationCheck !== 'false') {
+      // Throw a BadRequestException for invalid values of hasDonation
+      throw new BadRequestException('Invalid value for hasDonation. Only true or false are allowed.');
+    }
 
-// Check if hasSeva is 1, sevaId should be provided and not undefined
-if (createFestivalDTO.hasSeva === 1 || createFestivalDTO.sevaId === undefined) {
-  throw new Error('Seva ID is required when hasSeva is 1.');
-}
-
-// Check if hasDonation is 1, donationId should be provided and not undefined
-if (createFestivalDTO.hasDonation === 1 || createFestivalDTO.donationId === undefined) {
-  throw new Error('Donation ID is required when hasDonation is 1.');
-}
-
-
-    // Call the service method to create the festival
-    const result = await this.festivalsService.createFestival(createFestivalDTO);
-
-    return {
-      status: true,
-      statusMessage: 'Festival created successfully',
-      data: result,
-    };
+    // Proceed with creating the festival
+    return this.festivalsService.createFestival(createFestivalDTO);
   } catch (error) {
-    console.error('Error creating festival:', error.message);
-    // Handle the error appropriately (logging, returning an error response, etc.)
+    // Log and handle the error appropriately
+    this.logger.error(error.message);
+
+    // Return an error response or rethrow the error depending on your requirements
     throw new HttpException('Failed to create Festival', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
 
+// @Put('/festivals/updateFestival/:id')
+// @ApiOperation({ summary: 'Update a festival by ID' })
+// @ApiParam({ name: 'id', description: 'ID of the festival', type: 'string' })
+// @ApiConsumes('multipart/form-data')
+// @ApiBody({
+//   description: 'Updated festival details',
+//   type: UpdateFestivalDTO,
+// })
+// async updateFestival(@Param('id') festivalId: string, @Body() updateFestivalDTO: UpdateFestivalDTO) {
+//   try {
+//     // Call the service method to update the festival
+//     const updatedFestival = await this.festivalsService.updateFestivalById(festivalId, updateFestivalDTO);
+    
+//     // Return the updated festival
+//     return updatedFestival;
+//   } catch (error) {
+//     // Log and handle the error appropriately
+//     this.logger.error(error.message);
 
-
-
-
-
-
+//     // Return an error response or rethrow the error depending on your requirements
+//     throw new HttpException('Failed to update Festival', HttpStatus.INTERNAL_SERVER_ERROR);
+//   }
+// }
 
 
   @Get("/festivals/getFestival/:festivalId")

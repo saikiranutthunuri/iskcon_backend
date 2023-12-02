@@ -16,8 +16,8 @@ export interface calenderEventsAttributes {
   eventImage?: Uint8Array;
   bannerImage?: Uint8Array;
   date?: Date;
-  hasDonation?: number;
-  hasSeva?: number;
+  hasDonation?: string;
+  hasSeva?: string;
   donationId?: string;
   sevaId?: string;
   concurrencyStamp: string;
@@ -26,8 +26,8 @@ export interface calenderEventsAttributes {
   lastModificationTime?: Date;
   lastModifierId?: string;
   eventId?: string;
-  hasEvent?: number;
-  hasSpotlight?: number;
+  hasEvent?: string;
+  hasSpotlight?: string;
   spotlightId?: string;
 }
 
@@ -57,11 +57,11 @@ export class calenderEvents
   @Column({ field: 'Date', allowNull: true, type: DataType.DATE(6) })
   date?: Date;
 
-  @Column({ field: 'HasDonation', allowNull: true, type: DataType.TINYINT , defaultValue: "0" })
-  hasDonation?: number;
+  @Column({ field: 'HasDonation', allowNull: true, type: DataType.STRING })
+  hasDonation?: string;
 
-  @Column({ field: 'HasSeva', allowNull: true, type: DataType.TINYINT  , defaultValue: "0" })
-  hasSeva?: number;
+  @Column({ field: 'HasSeva',  allowNull: true, type: DataType.STRING })
+  hasSeva?: string;
 
   @Column({ field: 'DonationId', allowNull: true, type: DataType.CHAR(36) })
   donationId?: string;
@@ -91,11 +91,12 @@ export class calenderEvents
   @Column({ field: 'EventId', allowNull: true, type: DataType.CHAR(36) })
   eventId?: string;
 
-  @Column({ field: 'HasEvent', allowNull: true, type: DataType.TINYINT })
-  hasEvent?: number;
+  @Column({ field: 'HasEvent',  allowNull: true, type: DataType.STRING })
+  hasEvent?: string;
 
-  @Column({ field: 'HasSpotlight', allowNull: true, type: DataType.TINYINT  })
-  hasSpotlight?: number;
+  @Column({ field: 'HasSpotlight', allowNull: true, type: DataType.STRING })
+  hasSpotlight?: string;
+
 
   @Column({ field: 'SpotlightId', allowNull: true, type: DataType.CHAR(36) })
   spotlightId?: string;

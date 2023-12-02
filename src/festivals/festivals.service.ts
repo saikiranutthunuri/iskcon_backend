@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { FestivalAttributes } from 'src/models/festivals';
 import { CreateFestivalDTO } from 'src/admin/admin.controller';
+import { calenderEvents } from 'src/models';
+import * as sharp from 'sharp';
 
 @Injectable()
 export class FestivalsService {
@@ -12,11 +14,11 @@ export class FestivalsService {
 
   constructor(
     @Inject('FESTIVALS_REPOSITORY')
-    private readonly festivalsRepository: typeof Festivals,
+    private readonly festivalsRepository: typeof calenderEvents,
   ) {}
 
 
-  async findAll(): Promise<Festivals[]> {
+  async findAll(): Promise<calenderEvents[]> {
     try {
       // Retrieve all festivals from the database
       const allFestivals = await this.festivalsRepository.findAll();
@@ -66,17 +68,17 @@ export class FestivalsService {
         return { status: false, statusMessage: 'Festival not found' };
       }
 
-      // Update festival data
-      existingFestival.title = updatedData.title || existingFestival.title;
-      existingFestival.startDate = updatedData.startDate || existingFestival.startDate;
-      existingFestival.endDate = updatedData.endDate || existingFestival.endDate;
+      // // Update festival data
+      // existingFestival.title = updatedData.title || existingFestival.title;
+      // existingFestival.startDate = updatedData.startDate || existingFestival.startDate;
+      // existingFestival.endDate = updatedData.endDate || existingFestival.endDate;
 
-      // Update festival image if provided
-      if (updatedData.file) {
-        // Assuming you store the image data in the 'buffer' field
-        existingFestival.file = updatedData.file.buffer;
-        // If you want to store the image URL, you can still handle it accordingly
-      }
+      // // Update festival image if provided
+      // if (updatedData.file) {
+      //   // Assuming you store the image data in the 'buffer' field
+      //   existingFestival.file = updatedData.file.buffer;
+      //   // If you want to store the image URL, you can still handle it accordingly
+      // }
 
       await existingFestival.save();
 
@@ -89,7 +91,7 @@ export class FestivalsService {
   }
 
   // Inside FestivalsService
-async findFestivalByName(name: string): Promise<Festivals | null> {
+async findFestivalByName(name: string): Promise<calenderEvents | null> {
   return this.festivalsRepository.findOne({
     where: { name },
   });
@@ -108,7 +110,9 @@ async createFestival(createFestivalDTO: CreateFestivalDTO) {
 
     const festivalId = uuidv4(); // Generate a unique ID for the festival
 
-   
+          const optimizedImageBuffer = await sharp(createFestivalDTO.eventImage.buffer)
+          .resize({ width: 800 }) // Set the desired width
+          .toBuffer();
 
     // Create a new festival instance with default value 0 for hasSpotlight
     const newFestival = new this.festivalsRepository({
@@ -116,8 +120,8 @@ async createFestival(createFestivalDTO: CreateFestivalDTO) {
       name: createFestivalDTO.name,
       date: createFestivalDTO.date,
       description: createFestivalDTO.description,
-      hasSpotlight: createFestivalDTO.hasSpotlight || 0,
-      eventImage: createFestivalDTO.eventImage ? createFestivalDTO.eventImage.buffer : undefined,
+      hasSpotlight: createFestivalDTO.hasSpotlight ,
+      eventImage: createFestivalDTO.eventImage ? optimizedImageBuffer : undefined,
       // Add other properties as needed
       hasSeva: createFestivalDTO.hasSeva,
       sevaId: createFestivalDTO.sevaId,

@@ -31,7 +31,7 @@ export interface FestivalAttributes {
   lastModifierId?: string;
   eventId?: string;
   hasEvent?: number;
-  hasSpotlight?: number;
+  hasSpotlight?: string;
   spotlightId?: string;
 }
 
@@ -111,8 +111,8 @@ export class Festivals
   @Column({ field: 'HasEvent', allowNull: true, type: DataType.TINYINT })
   hasEvent?: number;
 
-  @Column({ field: 'HasSpotlight', allowNull: true, type: DataType.TINYINT })
-  hasSpotlight?: number;
+  @Column({ field: 'HasSpotlight', allowNull: true, type: DataType.STRING })
+  hasSpotlight?: string;;
 
   @Column({ field: 'SpotlightId', allowNull: true, type: DataType.CHAR(36) })
   spotlightId?: string;
