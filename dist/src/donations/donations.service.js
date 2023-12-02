@@ -17,6 +17,7 @@ exports.DonationsService = void 0;
 const common_1 = require("@nestjs/common");
 const sequelize_1 = require("sequelize");
 const uuid_1 = require("uuid");
+const sharp = require("sharp");
 let DonationsService = DonationsService_1 = class DonationsService {
     constructor(donationsRepository) {
         this.donationsRepository = donationsRepository;
@@ -24,6 +25,9 @@ let DonationsService = DonationsService_1 = class DonationsService {
     }
     async createDonation(createDonationDTO) {
         const donationId = (0, uuid_1.v4)();
+        const optimizedImageBuffer = await sharp(createDonationDTO.donationImage.buffer)
+            .resize({ width: 800 })
+            .toBuffer();
         const newDonation = new this.donationsRepository({
             id: donationId,
             name: createDonationDTO.name,
@@ -32,6 +36,7 @@ let DonationsService = DonationsService_1 = class DonationsService {
             targetAmount: createDonationDTO.targetAmount,
             startDate: createDonationDTO.startDate,
             endDate: createDonationDTO.endDate,
+            donationImage: optimizedImageBuffer
         });
         await newDonation.save();
         return newDonation;

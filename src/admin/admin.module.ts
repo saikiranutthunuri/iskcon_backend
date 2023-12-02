@@ -8,6 +8,7 @@ import { TickerTextModule } from 'src/ticker-texts/ticker-texts.module';
 import { SevasModule } from 'src/sevas/sevas.module';
 import { LiveStreamsModule } from 'src/live-streams/live-streams.module';
 import { FestivalsModule } from 'src/festivals/festivals.module';
+import { CalendarEventsModule } from 'src/calendar-events/calendar-events.module';
 
 
 @Module({
@@ -20,7 +21,7 @@ import { FestivalsModule } from 'src/festivals/festivals.module';
     SevasModule,
     LiveStreamsModule,
     FestivalsModule,
-   
+    CalendarEventsModule
   ],
   controllers: [AdminController],
 })

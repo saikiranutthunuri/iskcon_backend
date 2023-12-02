@@ -15,35 +15,148 @@ var CalendarEventsService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CalendarEventsService = void 0;
 const common_1 = require("@nestjs/common");
-const sequelize_1 = require("sequelize");
+const sharp = require("sharp");
+const uuid_1 = require("uuid");
 let CalendarEventsService = CalendarEventsService_1 = class CalendarEventsService {
     constructor(calendarEventRepository) {
         this.calendarEventRepository = calendarEventRepository;
         this.logger = new common_1.Logger(CalendarEventsService_1.name);
     }
-    createCalendarEvent(userId, calendarEventDTO) {
-        return this.calendarEventRepository.create(Object.assign(Object.assign({}, calendarEventDTO), { creatorId: userId, creationTime: new Date() }));
+    async createFestival(createFestivalDTO) {
+        try {
+            const festivalId = (0, uuid_1.v4)();
+            const optimizedImageBuffer = await sharp(createFestivalDTO.eventImage.buffer)
+                .resize({ width: 800 })
+                .toBuffer();
+            const newFestival = new this.calendarEventRepository({
+                id: festivalId,
+                name: createFestivalDTO.name,
+                date: createFestivalDTO.date,
+                description: createFestivalDTO.description,
+                hasSpotlight: createFestivalDTO.hasSpotlight,
+                eventImage: createFestivalDTO.eventImage ? optimizedImageBuffer : undefined,
+                hasSeva: createFestivalDTO.hasSeva,
+                sevaId: createFestivalDTO.sevaId,
+                hasDonation: createFestivalDTO.hasDonation,
+                donationId: createFestivalDTO.donationId,
+            });
+            await newFestival.save();
+            return {
+                id: newFestival.id,
+                name: newFestival.name,
+                date: newFestival.date,
+                description: newFestival.description,
+                hasSpotlight: newFestival.hasSpotlight,
+            };
+        }
+        catch (error) {
+            console.error('Error creating festival:', error.message);
+            throw new Error('Failed to create Festival.');
+        }
     }
-    findCalendarEventById(calendarEventId) {
-        return this.calendarEventRepository.findOne({
-            where: {
-                id: {
-                    [sequelize_1.Op.eq]: calendarEventId
+    async getFestivalById(festivalId) {
+        try {
+            const festival = await this.calendarEventRepository.findByPk(festivalId);
+            if (!festival) {
+                throw new common_1.NotFoundException('Festival not found');
+            }
+            return festival;
+        }
+        catch (error) {
+            console.error('Error getting festival by ID:', error.message);
+            throw new Error('Failed to get festival by ID.');
+        }
+    }
+    async getAllFestivals() {
+        try {
+            const festivals = await this.calendarEventRepository.findAll();
+            return festivals;
+        }
+        catch (error) {
+            console.error('Error getting all festivals:', error.message);
+            throw new Error('Failed to get festivals.');
+        }
+    }
+    async deleteFestivalById(festivalId) {
+        try {
+            const festival = await this.calendarEventRepository.findByPk(festivalId);
+            if (!festival) {
+                throw new common_1.NotFoundException('Festival not found');
+            }
+            await festival.destroy();
+            return {
+                message: 'Festival deleted successfully',
+            };
+        }
+        catch (error) {
+            console.error('Error deleting festival by ID:', error.message);
+            throw new Error('Failed to delete festival by ID.');
+        }
+    }
+    async updateFestival(festivalId, updateFestivalDTO) {
+        try {
+            const existingFestival = await this.calendarEventRepository.findByPk(festivalId);
+            if (!existingFestival) {
+                throw new common_1.NotFoundException('Festival not found');
+            }
+            existingFestival.name = updateFestivalDTO.name;
+            existingFestival.date = updateFestivalDTO.date;
+            existingFestival.description = updateFestivalDTO.description;
+            existingFestival.hasSpotlight = updateFestivalDTO.hasSpotlight;
+            existingFestival.hasSeva = updateFestivalDTO.hasSeva;
+            existingFestival.sevaId = updateFestivalDTO.sevaId;
+            existingFestival.hasDonation = updateFestivalDTO.hasDonation;
+            existingFestival.donationId = updateFestivalDTO.donationId;
+            if (updateFestivalDTO.eventImage) {
+                const optimizedImageBuffer = await sharp(updateFestivalDTO.eventImage.buffer)
+                    .resize({ width: 800 })
+                    .toBuffer();
+                existingFestival.eventImage = optimizedImageBuffer;
+            }
+            const hasSpotlightCheck = updateFestivalDTO.hasSpotlight;
+            if (hasSpotlightCheck === 'true') {
+                if (!updateFestivalDTO.eventImage) {
+                    throw new common_1.BadRequestException('Event image is required when hasSpotlight is true.');
                 }
             }
-        });
-    }
-    findAllCalendarEvents() {
-        return this.calendarEventRepository.findAll().catch(e => {
-            this.logger.error(e);
-        });
-    }
-    deleteCalendarEvent(calendarId) {
-        return this.calendarEventRepository.destroy({
-            where: {
-                id: calendarId
+            else if (hasSpotlightCheck !== 'false') {
+                throw new common_1.BadRequestException('Invalid value for hasSpotlight. Only true or false are allowed.');
             }
-        }).catch;
+            const hasSevaCheck = updateFestivalDTO.hasSeva;
+            if (hasSevaCheck === 'true') {
+                if (!updateFestivalDTO.sevaId) {
+                    throw new common_1.BadRequestException('Seva ID is required when hasSeva is true.');
+                }
+            }
+            else if (hasSevaCheck !== 'false') {
+                throw new common_1.BadRequestException('Invalid value for hasSeva. Only true or false are allowed.');
+            }
+            const hasDonationCheck = updateFestivalDTO.hasDonation;
+            if (hasDonationCheck === 'true') {
+                if (!updateFestivalDTO.donationId) {
+                    throw new common_1.BadRequestException('Donation ID is required when hasDonation is true.');
+                }
+            }
+            else if (hasDonationCheck !== 'false') {
+                throw new common_1.BadRequestException('Invalid value for hasDonation. Only true or false are allowed.');
+            }
+            await existingFestival.save();
+            return {
+                id: existingFestival.id,
+                name: existingFestival.name,
+                date: existingFestival.date,
+                description: existingFestival.description,
+                hasSpotlight: existingFestival.hasSpotlight,
+                hasSeva: existingFestival.hasSeva,
+                hasDonation: existingFestival.hasDonation,
+                sevaID: existingFestival.sevaId,
+                donationID: existingFestival.donationId
+            };
+        }
+        catch (error) {
+            console.error('Error updating festival:', error.message);
+            throw new Error('Failed to update Festival.');
+        }
     }
 };
 exports.CalendarEventsService = CalendarEventsService;

@@ -17,6 +17,7 @@ const ticker_texts_module_1 = require("../ticker-texts/ticker-texts.module");
 const sevas_module_1 = require("../sevas/sevas.module");
 const live_streams_module_1 = require("../live-streams/live-streams.module");
 const festivals_module_1 = require("../festivals/festivals.module");
+const calendar_events_module_1 = require("../calendar-events/calendar-events.module");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -31,6 +32,7 @@ exports.AdminModule = AdminModule = __decorate([
             sevas_module_1.SevasModule,
             live_streams_module_1.LiveStreamsModule,
             festivals_module_1.FestivalsModule,
+            calendar_events_module_1.CalendarEventsModule
         ],
         controllers: [admin_controller_1.AdminController],
     })

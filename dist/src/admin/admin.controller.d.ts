@@ -10,6 +10,7 @@ import { TickerTextService } from 'src/ticker-texts/ticker-texts.service';
 import { LiveStreamsService } from 'src/live-streams/live-streams.service';
 import { sevas } from 'src/models';
 import { FestivalsService } from 'src/festivals/festivals.service';
+import { CalendarEventsService } from 'src/calendar-events/calendar-events.service';
 export declare class CreateFestivalDTO {
     name: string;
     date: Date;
@@ -112,8 +113,9 @@ export declare class AdminController {
     private readonly sevasService;
     private readonly liveStreamsService;
     private readonly festivalsService;
+    private readonly calendareventsService;
     private logger;
-    constructor(nonFunctionalDays: NonFunctionalDaysService, audioChantService: AudioChantService, donationsService: DonationsService, promptFilterService: PromptFiltersService, tickerTextService: TickerTextService, sevasService: SevasService, liveStreamsService: LiveStreamsService, festivalsService: FestivalsService);
+    constructor(nonFunctionalDays: NonFunctionalDaysService, audioChantService: AudioChantService, donationsService: DonationsService, promptFilterService: PromptFiltersService, tickerTextService: TickerTextService, sevasService: SevasService, liveStreamsService: LiveStreamsService, festivalsService: FestivalsService, calendareventsService: CalendarEventsService);
     PostNonFunctionalDaysMethod(request: Request, createNonFunctionalDaysDTO: CreateNonFunctionalDaysDTO): Promise<import("src/models").nonFunctionalDays>;
     GetNonFunctionalDaysMethod(): Promise<import("src/models").nonFunctionalDays[]>;
     DeleteNonFunctionalDayMethod(deleteNonFunctionalDayDto: DeleteNonFunctionalDayDTO): Promise<number | void>;
@@ -148,15 +150,21 @@ export declare class AdminController {
         description: string;
         hasSpotlight: string;
     }>;
-    GetFestivalMethod(request: Request): void;
-    getAllFestivals(): Promise<{
-        status: boolean;
-        statusMessage: string;
-        data: any[];
+    getFestivalById(festivalId: string): Promise<import("src/models").calenderEvents>;
+    getAllFestivals(): Promise<import("src/models").calenderEvents[]>;
+    deleteFestivalById(festivalId: string): Promise<{
+        message: string;
     }>;
-    deleteFestival(festivalId: string): Promise<{
-        status: boolean;
-        statusMessage: string;
+    updateFestival(festivalId: string, updateFestivalDTO: UpdateFestivalDTO, eventImage: Express.Multer.File): Promise<{
+        id: string;
+        name: string;
+        date: Date;
+        description: string;
+        hasSpotlight: string;
+        hasSeva: string;
+        hasDonation: string;
+        sevaID: string;
+        donationID: string;
     }>;
 }
 export {};

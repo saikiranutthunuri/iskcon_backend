@@ -3,8 +3,8 @@ import { Op } from 'sequelize';
 import { donations  } from 'src/models';
 import { v4 as uuidv4 } from 'uuid';
 import { donationsAttributes } from 'src/models'
-import { CreateDonationDTO , UpdateDonationDTO  } from 'src/admin/admin.controller';
-
+import { CreateDonationDTO , CreateFestivalDTO, UpdateDonationDTO  } from 'src/admin/admin.controller';
+import * as sharp from 'sharp';
 
 @Injectable()
 export class DonationsService {
@@ -17,7 +17,11 @@ export class DonationsService {
 
     async createDonation(createDonationDTO: CreateDonationDTO) {
     const donationId = uuidv4(); // Generate a unique ID for the donation
-
+    
+     const optimizedImageBuffer = await sharp(createDonationDTO.donationImage.buffer)
+        .resize({ width: 800 }) // Set the desired width
+        .toBuffer();
+   
     // Create a new donation instance
     const newDonation = new this.donationsRepository({
       id: donationId,
@@ -27,6 +31,7 @@ export class DonationsService {
       targetAmount: createDonationDTO.targetAmount,
       startDate: createDonationDTO.startDate,
       endDate: createDonationDTO.endDate,
+      donationImage: optimizedImageBuffer
       // Add other properties as needed
     });
 

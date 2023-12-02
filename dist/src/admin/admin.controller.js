@@ -26,6 +26,7 @@ const sevas_service_1 = require("../sevas/sevas.service");
 const ticker_texts_service_1 = require("../ticker-texts/ticker-texts.service");
 const live_streams_service_1 = require("../live-streams/live-streams.service");
 const festivals_service_1 = require("../festivals/festivals.service");
+const calendar_events_service_1 = require("../calendar-events/calendar-events.service");
 class CreateFestivalDTO {
 }
 exports.CreateFestivalDTO = CreateFestivalDTO;
@@ -422,7 +423,7 @@ __decorate([
     __metadata("design:type", Date)
 ], DeleteNonFunctionalDayDTO.prototype, "occassionDate", void 0);
 let AdminController = AdminController_1 = class AdminController {
-    constructor(nonFunctionalDays, audioChantService, donationsService, promptFilterService, tickerTextService, sevasService, liveStreamsService, festivalsService) {
+    constructor(nonFunctionalDays, audioChantService, donationsService, promptFilterService, tickerTextService, sevasService, liveStreamsService, festivalsService, calendareventsService) {
         this.nonFunctionalDays = nonFunctionalDays;
         this.audioChantService = audioChantService;
         this.donationsService = donationsService;
@@ -431,6 +432,7 @@ let AdminController = AdminController_1 = class AdminController {
         this.sevasService = sevasService;
         this.liveStreamsService = liveStreamsService;
         this.festivalsService = festivalsService;
+        this.calendareventsService = calendareventsService;
         this.logger = new common_1.Logger(AdminController_1.name);
     }
     PostNonFunctionalDaysMethod(request, createNonFunctionalDaysDTO) {
@@ -575,39 +577,79 @@ let AdminController = AdminController_1 = class AdminController {
             else if (hasDonationCheck !== 'false') {
                 throw new common_1.BadRequestException('Invalid value for hasDonation. Only true or false are allowed.');
             }
-            return this.festivalsService.createFestival(createFestivalDTO);
+            return this.calendareventsService.createFestival(createFestivalDTO);
         }
         catch (error) {
             this.logger.error(error.message);
             throw new common_1.HttpException('Failed to create Festival', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    GetFestivalMethod(request) {
-        return;
+    async getFestivalById(festivalId) {
+        try {
+            return this.calendareventsService.getFestivalById(festivalId);
+        }
+        catch (error) {
+            this.logger.error(error.message);
+            throw new common_1.HttpException('Failed to get festival by ID', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async getAllFestivals() {
         try {
-            const festivalsList = await this.festivalsService.findAll();
-            this.logger.debug('Festivals retrieved successfully', festivalsList);
-            return {
-                status: true,
-                statusMessage: 'Festivals retrieved successfully',
-                data: festivalsList,
-            };
+            return this.calendareventsService.getAllFestivals();
         }
         catch (error) {
             this.logger.error(error.message);
-            throw new common_1.HttpException('Failed to retrieve Festivals', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException('Failed to get festivals', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async deleteFestival(festivalId) {
+    async deleteFestivalById(festivalId) {
         try {
-            const result = await this.festivalsService.deleteFestivalById(festivalId);
-            return result;
+            return this.calendareventsService.deleteFestivalById(festivalId);
         }
         catch (error) {
             this.logger.error(error.message);
-            throw new common_1.HttpException('Failed to delete Festival', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException('Failed to delete festival by ID', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async updateFestival(festivalId, updateFestivalDTO, eventImage) {
+        try {
+            updateFestivalDTO.eventImage = eventImage;
+            const existingFestival = await this.calendareventsService.getFestivalById(festivalId);
+            if (!existingFestival) {
+                throw new common_1.NotFoundException('Festival not found');
+            }
+            const hasSpotlightCheck = updateFestivalDTO.hasSpotlight;
+            if (hasSpotlightCheck === 'true') {
+                if (!updateFestivalDTO.eventImage) {
+                    throw new common_1.BadRequestException('Event image is required when hasSpotlight is true.');
+                }
+            }
+            else if (hasSpotlightCheck !== 'false') {
+                throw new common_1.BadRequestException('Invalid value for hasSpotlight. Only true or false are allowed.');
+            }
+            const hasSevaCheck = updateFestivalDTO.hasSeva;
+            if (hasSevaCheck === 'true') {
+                if (!updateFestivalDTO.sevaId) {
+                    throw new common_1.BadRequestException('Seva ID is required when hasSeva is true.');
+                }
+            }
+            else if (hasSevaCheck !== 'false') {
+                throw new common_1.BadRequestException('Invalid value for hasSeva. Only true or false are allowed.');
+            }
+            const hasDonationCheck = updateFestivalDTO.hasDonation;
+            if (hasDonationCheck === 'true') {
+                if (!updateFestivalDTO.donationId) {
+                    throw new common_1.BadRequestException('Donation ID is required when hasDonation is true.');
+                }
+            }
+            else if (hasDonationCheck !== 'false') {
+                throw new common_1.BadRequestException('Invalid value for hasDonation. Only true or false are allowed.');
+            }
+            return this.calendareventsService.updateFestival(festivalId, updateFestivalDTO);
+        }
+        catch (error) {
+            this.logger.error(error.message);
+            throw new common_1.HttpException('Failed to update Festival', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };
@@ -873,27 +915,44 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "createFestival", null);
 __decorate([
-    (0, common_1.Get)("/festivals/getFestival/:festivalId"),
-    __param(0, (0, common_1.Req)()),
+    (0, common_1.Get)("/festivals/getFestival/:id"),
+    (0, swagger_1.ApiOperation)({ summary: 'Get festival by ID' }),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request]),
-    __metadata("design:returntype", void 0)
-], AdminController.prototype, "GetFestivalMethod", null);
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "getFestivalById", null);
 __decorate([
     (0, common_1.Get)('/festivals/getAllFestivals'),
-    (0, swagger_1.ApiOperation)({ summary: 'Gets all festivals' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all festivals' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "getAllFestivals", null);
 __decorate([
-    (0, common_1.Delete)('/festivals/deleteFestival/:festivalId'),
+    (0, common_1.Delete)('/festivals/deleteFestival/:id'),
     (0, swagger_1.ApiOperation)({ summary: 'Delete festival by ID' }),
-    __param(0, (0, common_1.Param)('festivalId')),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], AdminController.prototype, "deleteFestival", null);
+], AdminController.prototype, "deleteFestivalById", null);
+__decorate([
+    (0, common_1.Put)('/festivals/updateFestival/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update an existing festival' }),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiBody)({
+        description: 'Festival details',
+        type: UpdateFestivalDTO,
+    }),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('eventImage')),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, UpdateFestivalDTO, Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "updateFestival", null);
 exports.AdminController = AdminController = AdminController_1 = __decorate([
     (0, common_1.Controller)('admin'),
     (0, swagger_1.ApiTags)('admin'),
@@ -905,6 +964,7 @@ exports.AdminController = AdminController = AdminController_1 = __decorate([
         ticker_texts_service_1.TickerTextService,
         sevas_service_1.SevasService,
         live_streams_service_1.LiveStreamsService,
-        festivals_service_1.FestivalsService])
+        festivals_service_1.FestivalsService,
+        calendar_events_service_1.CalendarEventsService])
 ], AdminController);
 //# sourceMappingURL=admin.controller.js.map

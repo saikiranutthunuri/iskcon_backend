@@ -56,6 +56,7 @@ export class SevasService {
       minAmount: createSevaDTO.minAmount,
       startDate: createSevaDTO.startDate,
       endDate: createSevaDTO.endDate,
+      sevaImage: createSevaDTO.sevaImage
   
     });
 

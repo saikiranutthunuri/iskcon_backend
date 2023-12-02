@@ -55,6 +55,7 @@ let SevasService = SevasService_1 = class SevasService {
             minAmount: createSevaDTO.minAmount,
             startDate: createSevaDTO.startDate,
             endDate: createSevaDTO.endDate,
+            sevaImage: createSevaDTO.sevaImage
         });
         await newSeva.save();
         return newSeva;

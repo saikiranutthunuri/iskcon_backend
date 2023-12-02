@@ -19,7 +19,8 @@ import {
   UseInterceptors,
   UsePipes,
   ValidationPipe,
-  BadRequestException
+  BadRequestException,
+  NotFoundException
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -46,6 +47,7 @@ import { extname } from 'path';
 
 // import { CreateFestivalDto } from 'src/festivals/dto/create-festival.dto';
  import { FestivalsService } from 'src/festivals/festivals.service';
+ import { CalendarEventsService } from 'src/calendar-events/calendar-events.service';
 
 
 export class CreateFestivalDTO {
@@ -394,7 +396,8 @@ export class AdminController {
     private readonly tickerTextService: TickerTextService,
     private readonly sevasService: SevasService,
     private readonly liveStreamsService: LiveStreamsService,
-   private readonly festivalsService: FestivalsService
+   private readonly festivalsService: FestivalsService,
+   private readonly calendareventsService : CalendarEventsService
   ) {}
 
   @Post('/postNonFunctionalDays')
@@ -773,7 +776,7 @@ async createFestival(
     }
 
     // Proceed with creating the festival
-    return this.festivalsService.createFestival(createFestivalDTO);
+    return this.calendareventsService.createFestival(createFestivalDTO);
   } catch (error) {
     // Log and handle the error appropriately
     this.logger.error(error.message);
@@ -783,70 +786,116 @@ async createFestival(
   }
 }
 
-// @Put('/festivals/updateFestival/:id')
-// @ApiOperation({ summary: 'Update a festival by ID' })
-// @ApiParam({ name: 'id', description: 'ID of the festival', type: 'string' })
-// @ApiConsumes('multipart/form-data')
-// @ApiBody({
-//   description: 'Updated festival details',
-//   type: UpdateFestivalDTO,
-// })
-// async updateFestival(@Param('id') festivalId: string, @Body() updateFestivalDTO: UpdateFestivalDTO) {
-//   try {
-//     // Call the service method to update the festival
-//     const updatedFestival = await this.festivalsService.updateFestivalById(festivalId, updateFestivalDTO);
-    
-//     // Return the updated festival
-//     return updatedFestival;
-//   } catch (error) {
-//     // Log and handle the error appropriately
-//     this.logger.error(error.message);
-
-//     // Return an error response or rethrow the error depending on your requirements
-//     throw new HttpException('Failed to update Festival', HttpStatus.INTERNAL_SERVER_ERROR);
-//   }
-// }
 
 
-  @Get("/festivals/getFestival/:festivalId")
-  GetFestivalMethod(@Req() request:Request) {
-    return
+
+  @Get("/festivals/getFestival/:id")
+
+  @ApiOperation({ summary: 'Get festival by ID' })
+  async getFestivalById(@Param('id') festivalId: string) {
+  try {
+    return this.calendareventsService.getFestivalById(festivalId);
+  } catch (error) {
+    this.logger.error(error.message);
+    throw new HttpException('Failed to get festival by ID', HttpStatus.INTERNAL_SERVER_ERROR);
   }
+  }
+
+
 
   @Get('/festivals/getAllFestivals')
-  @ApiOperation({ summary: 'Gets all festivals' })
-  async getAllFestivals(): Promise<{ status: boolean; statusMessage: string; data: any[] }> {
-    try {
-      const festivalsList = await this.festivalsService.findAll();
-
-      // Log the successful retrieval
-      this.logger.debug('Festivals retrieved successfully', festivalsList);
-
-      return {
-        status: true,
-        statusMessage: 'Festivals retrieved successfully',
-        data: festivalsList,
-      };
-    } catch (error) {
-      // Log and handle the error appropriately
-      this.logger.error(error.message);
-
-      // Return an error response or rethrow the error depending on your requirements
-      throw new HttpException('Failed to retrieve Festivals', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  @ApiOperation({ summary: 'Get all festivals' })
+async getAllFestivals() {
+  try {
+    return this.calendareventsService.getAllFestivals();
+  } catch (error) {
+    this.logger.error(error.message);
+    throw new HttpException('Failed to get festivals', HttpStatus.INTERNAL_SERVER_ERROR);
   }
+}
+ 
 
-  @Delete('/festivals/deleteFestival/:festivalId')
-  @ApiOperation({ summary: 'Delete festival by ID' })
-  async deleteFestival(@Param('festivalId') festivalId: string): Promise<{ status: boolean; statusMessage: string }> {
-    try {
-      const result = await this.festivalsService.deleteFestivalById(festivalId);
-      return result;
-    } catch (error) {
-      this.logger.error(error.message);
-      throw new HttpException('Failed to delete Festival', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+ 
+
+@Delete('/festivals/deleteFestival/:id')
+@ApiOperation({ summary: 'Delete festival by ID' })
+async deleteFestivalById(@Param('id') festivalId: string) {
+  try {
+    return this.calendareventsService.deleteFestivalById(festivalId);
+  } catch (error) {
+    this.logger.error(error.message);
+    throw new HttpException('Failed to delete festival by ID', HttpStatus.INTERNAL_SERVER_ERROR);
   }
+}
+
+@Put('/festivals/updateFestival/:id')
+@ApiOperation({ summary: 'Update an existing festival' })
+@ApiConsumes('multipart/form-data')
+@ApiBody({
+  description: 'Festival details',
+  type: UpdateFestivalDTO,
+})
+@UseInterceptors(FileInterceptor('eventImage'))
+async updateFestival(
+  @Param('id') festivalId: string,
+  @Body() updateFestivalDTO: UpdateFestivalDTO,
+  @UploadedFile() eventImage: Express.Multer.File,
+) {
+  try {
+    // Access the uploaded file using the eventImage parameter
+    updateFestivalDTO.eventImage = eventImage;
+
+    // Check if the festival with the given ID exists
+    const existingFestival = await this.calendareventsService.getFestivalById(festivalId);
+    if (!existingFestival) {
+      throw new NotFoundException('Festival not found');
+    }
+
+    // Check the hasSpotlight value and handle accordingly
+    const hasSpotlightCheck = updateFestivalDTO.hasSpotlight;
+    if (hasSpotlightCheck === 'true') {
+      // If hasSpotlight is true, check if eventImage is provided
+      if (!updateFestivalDTO.eventImage) {
+        throw new BadRequestException('Event image is required when hasSpotlight is true.');
+      }
+    } else if (hasSpotlightCheck !== 'false') {
+      // Throw a BadRequestException for invalid values of hasSpotlight
+      throw new BadRequestException('Invalid value for hasSpotlight. Only true or false are allowed.');
+    }
+
+    // Check the hasSeva value and handle accordingly
+    const hasSevaCheck = updateFestivalDTO.hasSeva;
+    if (hasSevaCheck === 'true') {
+      // If hasSeva is true, check if sevaId is provided
+      if (!updateFestivalDTO.sevaId) {
+        throw new BadRequestException('Seva ID is required when hasSeva is true.');
+      }
+    } else if (hasSevaCheck !== 'false') {
+      // Throw a BadRequestException for invalid values of hasSeva
+      throw new BadRequestException('Invalid value for hasSeva. Only true or false are allowed.');
+    }
+
+    // Check the hasDonation value and handle accordingly
+    const hasDonationCheck = updateFestivalDTO.hasDonation;
+    if (hasDonationCheck === 'true') {
+      // If hasDonation is true, check if donationId is provided
+      if (!updateFestivalDTO.donationId) {
+        throw new BadRequestException('Donation ID is required when hasDonation is true.');
+      }
+    } else if (hasDonationCheck !== 'false') {
+      // Throw a BadRequestException for invalid values of hasDonation
+      throw new BadRequestException('Invalid value for hasDonation. Only true or false are allowed.');
+    }
+
+    // Call the service to update the festival
+    return this.calendareventsService.updateFestival(festivalId, updateFestivalDTO);
+  } catch (error) {
+    this.logger.error(error.message);
+
+    // Return an error response or rethrow the error depending on your requirements
+    throw new HttpException('Failed to update Festival', HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+}
 
 
 
