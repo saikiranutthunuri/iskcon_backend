@@ -72,9 +72,7 @@ export class DonationsService {
   }
 
    findDonations() {
-    return this.donationsRepository.findAll({
-      attributes: ['id', 'name', 'startDate', 'endDate', 'type'],
-    });
+    return this.donationsRepository.findAll();
   }
 
   findDonationByDonationId(donationId) {

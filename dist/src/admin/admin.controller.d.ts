@@ -162,7 +162,7 @@ export declare class AdminController {
             imagelink: string;
         }[];
     }>;
-    GetSevasBySevaIdMethod(request: Request, sevaId: string): Promise<sevas | HttpException>;
+    GetSevasBySevaIdMethod(request: Request, sevaId: string): Promise<HttpException | sevas>;
     DeleteSevaMethod(request: Request, sevaId: any): Promise<number | void>;
     createFestival(createFestivalDTO: CreateFestivalDTO, eventImage: Express.Multer.File): Promise<{
         id: string;
