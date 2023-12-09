@@ -42,17 +42,23 @@ export class AudioChantService {
     }
   }
 
-  async getAudioChant(): Promise<any> {
+    async getAudioChant(): Promise<string | null> {
     try {
       const result = await this.audioChantRepository.findOne({
+        attributes: ['link'],
         order: [['creationTime', 'DESC']],
       });
 
-      this.logger.debug('AudioChant retrieved successfully', result);
-      return result;
+      if (result) {
+        this.logger.debug('Latest Audio Link retrieved successfully', result.link);
+        return result.link;
+      } else {
+        this.logger.debug('No AudioChant found.');
+        return null;
+      }
     } catch (error) {
       this.logger.error(error);
-      throw new Error('Failed to retrieve AudioChant');
+      throw new Error('Failed to retrieve latest Audio Link');
     }
   }
 }
