@@ -35,7 +35,17 @@ export declare class UsersController {
     setProfilePictureMethod(): void;
     PostValidatePhoneNumber(request: Request, validatePhoneNumberDTO: ValidatePhoneNumberDTO): Promise<import("../models").users>;
     getReportsMethod(): void;
-    GetAudioChant(): Promise<string>;
+    getAudioChant(): Promise<{
+        data: string;
+        message: string;
+        success: boolean;
+        error?: undefined;
+    } | {
+        message: string;
+        success: boolean;
+        error: any;
+        data?: undefined;
+    }>;
     getLiveStreams(): Promise<{
         status: boolean;
         statusMessage: null;

@@ -156,9 +156,15 @@ export class UsersController {
   getReportsMethod() {}
 
   @Get('/getAudioChant')
-  @ApiOperation({summary: "Gets last audio chant loaded"})
-  GetAudioChant() {
-    return this.audioChantService.getAudioChant();
+   @ApiOperation({ summary: 'Gets last audio chant loaded' })
+
+  async getAudioChant() {
+    try {
+      const result = await this.audioChantService.getAudioChant();
+      return { data: result, message: 'AudioChant retrieved successfully', success: true };
+    } catch (error) {
+      return { message: 'Failed to retrieve AudioChant', success: false, error: error.message };
+    }
   }
 
   @Get('/live-streams')

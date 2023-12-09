@@ -110,8 +110,14 @@ let UsersController = UsersController_1 = class UsersController {
         return this.userService.validatePhoneNumber(request['id'], validatePhoneNumberDTO.phoneNumber, validatePhoneNumberDTO.otp);
     }
     getReportsMethod() { }
-    GetAudioChant() {
-        return this.audioChantService.getAudioChant();
+    async getAudioChant() {
+        try {
+            const result = await this.audioChantService.getAudioChant();
+            return { data: result, message: 'AudioChant retrieved successfully', success: true };
+        }
+        catch (error) {
+            return { message: 'Failed to retrieve AudioChant', success: false, error: error.message };
+        }
     }
     async getLiveStreams() {
         try {
@@ -192,11 +198,11 @@ __decorate([
 ], UsersController.prototype, "getReportsMethod", null);
 __decorate([
     (0, common_1.Get)('/getAudioChant'),
-    (0, swagger_1.ApiOperation)({ summary: "Gets last audio chant loaded" }),
+    (0, swagger_1.ApiOperation)({ summary: 'Gets last audio chant loaded' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UsersController.prototype, "GetAudioChant", null);
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getAudioChant", null);
 __decorate([
     (0, common_1.Get)('/live-streams'),
     (0, swagger_1.ApiOperation)({ summary: "Gets latest live stream link" }),
