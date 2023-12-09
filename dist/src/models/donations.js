@@ -98,6 +98,10 @@ __decorate([
     (0, sequelize_typescript_1.Column)({ field: 'ActionType', type: sequelize_typescript_1.DataType.INTEGER, defaultValue: '0' }),
     __metadata("design:type", Number)
 ], donations.prototype, "actionType", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({ field: 'imageLink', allowNull: true, type: sequelize_typescript_1.DataType.CHAR(36) }),
+    __metadata("design:type", String)
+], donations.prototype, "imageLink", void 0);
 exports.donations = donations = __decorate([
     (0, sequelize_typescript_1.Table)({ tableName: 'Donations', timestamps: false })
 ], donations);

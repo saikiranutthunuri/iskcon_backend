@@ -49,6 +49,8 @@ import { extname } from 'path';
  import { FestivalsService } from 'src/festivals/festivals.service';
  import { CalendarEventsService } from 'src/calendar-events/calendar-events.service';
 
+ import { donations , calenderEvents } from 'src/models';
+
 
 export class CreateFestivalDTO {
   @ApiProperty({ description: 'Name of the festival' })
@@ -618,10 +620,28 @@ async updateDonation(
 }
 
 
-@Get("/donations/getDonations")
-  @ApiOperation({summary:"Gets all donations"})
-  GetAllDonationsMethod(@Req() request: Request) {
-    return this.donationsService.findDonations()
+@Get('/donations/getDonations')
+  @ApiOperation({ summary: 'Gets all donations' })
+  async GetAllDonationsMethod(@Req() request: Request) {
+    try {
+      return {
+        data: (await this.donationsService.findDonations()).map(
+          (donation: donations) => {
+            return {
+              id: donation.id,
+              title: donation.name,
+              startDate: donation.startDate,
+              endDate: donation.endDate,
+              donationType: donation.type,
+              imagelink: donation.imageLink
+            };
+          },
+        ),
+      };
+    } catch (error) {
+      this.logger.error(error);
+      return new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
 @Get("/donations/getDonation/:donationId")
@@ -688,10 +708,28 @@ async updateDonation(
   }
 
 
-    @Get("/sevas/getSevas")
-  @ApiOperation({summary:"Gets all sevas"})
-  GetAllSevasMethod(@Req() request: Request) {
-    return this.sevasService.findSevas()
+  @Get('/sevas/getSevas')
+  @ApiOperation({ summary: 'Gets all sevas' })
+  async GetAllSevasMethod(@Req() request: Request) {
+    try {
+      return {
+        data: (await this.sevasService.findSevas()).map((seva: sevas) => {
+          return {
+            id: seva.id,
+            title: seva.name,
+            description: seva.description,
+            startDate: seva.startDate,
+            endDate: seva.endDate,
+            sevaType: seva.type,
+            minAmount: seva.minAmount,
+            imagelink: seva.imageLink
+          };
+        }),
+      };
+    } catch (error) {
+      this.logger.error(error);
+      return new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Get("/sevas/getSeva/:sevaId")
@@ -803,16 +841,27 @@ async createFestival(
 
 
 
-  @Get('/festivals/getAllFestivals')
-  @ApiOperation({ summary: 'Get all festivals' })
-async getAllFestivals() {
-  try {
-    return this.calendareventsService.getAllFestivals();
-  } catch (error) {
-    this.logger.error(error.message);
-    throw new HttpException('Failed to get festivals', HttpStatus.INTERNAL_SERVER_ERROR);
+  @Get('/festivals/getFestivals')
+  @ApiOperation({ summary: 'Gets all fesytivals' })
+  async GetAllFestivalsMethod(@Req() request: Request) {
+    try {
+      return {
+        data: (await calenderEvents.findAll()).map((festival: calenderEvents) => {
+          return {
+            id: festival.id,
+            title: festival.name,
+            description: festival.description,
+            date: festival.date,
+            imageLink: festival.imageLink
+            
+          };
+        }),
+      };
+    } catch (error) {
+      this.logger.error(error);
+      return new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
-}
  
 
  
@@ -896,6 +945,8 @@ async updateFestival(
     throw new HttpException('Failed to update Festival', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
+
+
 
 
 

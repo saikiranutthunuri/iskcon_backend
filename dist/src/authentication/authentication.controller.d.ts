@@ -31,11 +31,14 @@ export declare class PasswordUpdateDTO {
 export declare class AuthenticationController {
     private readonly authService;
     constructor(authService: AuthenticationService);
-    signUp(signUpDto: SignUpDto): Promise<void | import("../models").users> | HttpException;
+    signUp(signUpDto: SignUpDto): HttpException | Promise<void | import("../models").users>;
     consentSignup(signInDto: SignInDto): Promise<any>;
     verifyOTP(verifyOTPDto: VerifyOTP): void;
     sendOTP(sendOTPDto: SendOTPDto): void;
     signIn(request: Request, signInDto: SignInDto): Promise<any>;
+    verifyAndDecodeToken(body: {
+        token: string;
+    }): Promise<any>;
     consentValidation(consentValidationDto: ConsentValidationDTO): string;
     PostpasswordValidationMethod(passwordUpdateDto: PasswordUpdateDTO, request: Request): Promise<string>;
 }

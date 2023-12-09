@@ -153,6 +153,36 @@ export class AuthenticationController {
       request.headers['user-agent'],
     );
   }
+  
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('verify-and-decode-token')
+  @ApiOperation({
+    summary: 'Verify and decode a JWT token',
+    description: 'Send a JWT token to verify and decode.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        token: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  async verifyAndDecodeToken(@Body() body: { token: string }): Promise<any> {
+    const { token } = body;
+    
+    try {
+      const decodedToken = await this.authService.verifyAndDecodeToken(token);
+      return { success: true, decodedToken };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  
 
   @Public()
   @HttpCode(HttpStatus.OK)

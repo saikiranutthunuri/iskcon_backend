@@ -16,7 +16,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FestivalsService = void 0;
 const common_1 = require("@nestjs/common");
 const uuid_1 = require("uuid");
-const sharp = require("sharp");
 let FestivalsService = FestivalsService_1 = class FestivalsService {
     constructor(festivalsRepository) {
         this.festivalsRepository = festivalsRepository;
@@ -72,16 +71,13 @@ let FestivalsService = FestivalsService_1 = class FestivalsService {
     async createFestival(createFestivalDTO) {
         try {
             const festivalId = (0, uuid_1.v4)();
-            const optimizedImageBuffer = await sharp(createFestivalDTO.eventImage.buffer)
-                .resize({ width: 800 })
-                .toBuffer();
             const newFestival = new this.festivalsRepository({
                 id: festivalId,
                 name: createFestivalDTO.name,
                 date: createFestivalDTO.date,
                 description: createFestivalDTO.description,
                 hasSpotlight: createFestivalDTO.hasSpotlight,
-                eventImage: createFestivalDTO.eventImage ? optimizedImageBuffer : undefined,
+                eventImage: createFestivalDTO.eventImage ? createFestivalDTO.eventImage.buffer : undefined,
                 hasSeva: createFestivalDTO.hasSeva,
                 sevaId: createFestivalDTO.sevaId,
                 hasDonation: createFestivalDTO.hasDonation,

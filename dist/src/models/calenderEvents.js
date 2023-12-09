@@ -98,6 +98,10 @@ __decorate([
     (0, sequelize_typescript_1.Column)({ field: 'SpotlightId', allowNull: true, type: sequelize_typescript_1.DataType.CHAR(36) }),
     __metadata("design:type", String)
 ], calenderEvents.prototype, "spotlightId", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({ field: 'ImageLink', allowNull: true, type: sequelize_typescript_1.DataType.CHAR(255) }),
+    __metadata("design:type", String)
+], calenderEvents.prototype, "imageLink", void 0);
 exports.calenderEvents = calenderEvents = __decorate([
     (0, sequelize_typescript_1.Table)({ tableName: 'CalenderEvents', timestamps: false })
 ], calenderEvents);

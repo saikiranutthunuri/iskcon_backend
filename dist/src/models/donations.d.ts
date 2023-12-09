@@ -19,6 +19,7 @@ export interface donationsAttributes {
     lastModificationTime?: Date;
     lastModifierId?: string;
     actionType?: number;
+    imageLink?: string;
 }
 export declare class donations extends Model<donationsAttributes, donationsAttributes> implements donationsAttributes {
     id: string;
@@ -40,4 +41,5 @@ export declare class donations extends Model<donationsAttributes, donationsAttri
     lastModificationTime?: Date;
     lastModifierId?: string;
     actionType?: number;
+    imageLink?: string;
 }

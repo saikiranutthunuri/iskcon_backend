@@ -74,9 +74,21 @@ let AuthenticationService = AuthenticationService_1 = class AuthenticationServic
             userId: user.id,
             role: user.role
         };
+        const data = await this.jwtService.signAsync(payload);
         return {
-            access_token: await this.jwtService.signAsync(payload),
+            access_token: data,
         };
+    }
+    async verifyAndDecodeToken(token) {
+        try {
+            const decodedToken = await this.jwtService.verifyAsync(token);
+            this.logger.log(`Decoded Token: ${JSON.stringify(decodedToken)}`);
+            return decodedToken;
+        }
+        catch (error) {
+            this.logger.error(`Error verifying/decoding token: ${error.message}`);
+            throw new common_1.UnauthorizedException();
+        }
     }
     async updatePassword(username, oldPassword, newPassword) {
         this.usersService.getUser(username).then(async (result) => {

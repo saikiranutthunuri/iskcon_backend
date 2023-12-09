@@ -16,10 +16,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LiveStreamsService = void 0;
 const common_1 = require("@nestjs/common");
 const uuid_1 = require("uuid");
+const authId = 'MAMDK5NJBMMDA2ODBLNT';
+const authToken = 'YjBkMWQ0ODk5OTJiZWJhOGU0M2JlNDc4MTcwYTNi';
+const sendPhoneNumber = '+13502003495';
+const SMS_MESSAGE_TEMPLATE_FOR_OTP = (userName, token) => `Dear ${userName}, Your OTP for completing this transaction is ${token}. Valid for 10 minutes. If you have not requested this OTP, please ignore this message.`;
+const SMS_MESSAGE_TEMPLATE_FOR_CONSERT = 'Hare Krishna!\r\n\r\nWe have built a new platform for Devotees, making the experience faster and more transparent. Please click the link to Register - https://iskconclient.azurewebsites.net/empty/registerConsentPage?consent_id={0}';
 let LiveStreamsService = LiveStreamsService_1 = class LiveStreamsService {
     constructor(liveStreamsRepository) {
         this.liveStreamsRepository = liveStreamsRepository;
         this.logger = new common_1.Logger(LiveStreamsService_1.name);
+        this.phoneNumberOTP = {};
     }
     async createLiveStream(link) {
         try {
@@ -58,6 +64,9 @@ let LiveStreamsService = LiveStreamsService_1 = class LiveStreamsService {
         catch (error) {
             throw new Error('Failed to retrieve live stream link');
         }
+    }
+    generateOTP() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
     }
 };
 exports.LiveStreamsService = LiveStreamsService;

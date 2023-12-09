@@ -20,5 +20,6 @@ export declare class AuthenticationService {
     hashPassword(password: string): Promise<string>;
     comparePasswords(plainTextPassword: string, hashedPassword: string): Promise<boolean>;
     signIn(username: string, pass: string, browserInfo: string): Promise<any>;
+    verifyAndDecodeToken(token: string): Promise<any>;
     updatePassword(username: any, oldPassword: any, newPassword: any): Promise<void>;
 }

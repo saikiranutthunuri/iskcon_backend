@@ -61,7 +61,9 @@ let DonationsService = DonationsService_1 = class DonationsService {
         return donation;
     }
     findDonations() {
-        return this.donationsRepository.findAll();
+        return this.donationsRepository.findAll({
+            attributes: ['id', 'name', 'startDate', 'endDate', 'type'],
+        });
     }
     findDonationByDonationId(donationId) {
         return this.donationsRepository.findOne({

@@ -140,6 +140,16 @@ let AuthenticationController = class AuthenticationController {
     signIn(request, signInDto) {
         return this.authService.signIn(signInDto.username, signInDto.password, request.headers['user-agent']);
     }
+    async verifyAndDecodeToken(body) {
+        const { token } = body;
+        try {
+            const decodedToken = await this.authService.verifyAndDecodeToken(token);
+            return { success: true, decodedToken };
+        }
+        catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
     consentValidation(consentValidationDto) {
         return 'Method Not Implemented';
     }
@@ -202,6 +212,29 @@ __decorate([
     __metadata("design:paramtypes", [Request, SignInDto]),
     __metadata("design:returntype", void 0)
 ], AuthenticationController.prototype, "signIn", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.Post)('verify-and-decode-token'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Verify and decode a JWT token',
+        description: 'Send a JWT token to verify and decode.',
+    }),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                token: {
+                    type: 'string',
+                },
+            },
+        },
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthenticationController.prototype, "verifyAndDecodeToken", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

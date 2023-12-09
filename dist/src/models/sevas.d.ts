@@ -18,6 +18,7 @@ export interface sevasAttributes {
     lastModificationTime?: Date;
     lastModifierId?: string;
     actionType?: number;
+    imageLink?: string;
 }
 export declare class sevas extends Model<sevasAttributes, sevasAttributes> implements sevasAttributes {
     id: string;
@@ -38,4 +39,5 @@ export declare class sevas extends Model<sevasAttributes, sevasAttributes> imple
     lastModificationTime?: Date;
     lastModifierId?: string;
     actionType?: number;
+    imageLink?: string;
 }

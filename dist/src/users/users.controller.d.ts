@@ -13,9 +13,6 @@ declare class UpdateProfileDTO {
     pincode?: string;
     gender?: number;
 }
-declare class SetPhoneNumberDTO {
-    phoneNumber: string;
-}
 declare class ValidatePhoneNumberDTO {
     phoneNumber: string;
     otp: string;
@@ -36,7 +33,6 @@ export declare class UsersController {
     updateProfileMethod(request: Request, updateProfileDTO: UpdateProfileDTO): Promise<[affectedCount: number]>;
     updateVoluteerFlag(request: Request, updateVolunteerDTO: UpdateVolunteerDTO): Promise<[affectedCount: number]>;
     setProfilePictureMethod(): void;
-    PostUpdatePhoneNumberMethod(request: Request, setPhoneNumberDTO: SetPhoneNumberDTO): Promise<string>;
     PostValidatePhoneNumber(request: Request, validatePhoneNumberDTO: ValidatePhoneNumberDTO): Promise<import("../models").users>;
     getReportsMethod(): void;
     GetAudioChant(): Promise<any>;

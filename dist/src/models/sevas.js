@@ -90,6 +90,10 @@ __decorate([
     (0, sequelize_typescript_1.Column)({ field: 'ActionType', type: sequelize_typescript_1.DataType.INTEGER, defaultValue: '0' }),
     __metadata("design:type", Number)
 ], sevas.prototype, "actionType", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({ field: 'imageLink', allowNull: true, type: sequelize_typescript_1.DataType.CHAR(36) }),
+    __metadata("design:type", String)
+], sevas.prototype, "imageLink", void 0);
 exports.sevas = sevas = __decorate([
     (0, sequelize_typescript_1.Table)({ tableName: 'Sevas', timestamps: false })
 ], sevas);

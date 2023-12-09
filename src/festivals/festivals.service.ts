@@ -110,9 +110,9 @@ async createFestival(createFestivalDTO: CreateFestivalDTO) {
 
     const festivalId = uuidv4(); // Generate a unique ID for the festival
 
-          const optimizedImageBuffer = await sharp(createFestivalDTO.eventImage.buffer)
-          .resize({ width: 800 }) // Set the desired width
-          .toBuffer();
+    //       const optimizedImageBuffer = await sharp(createFestivalDTO.eventImage.buffer)
+    //       .resize({ width: 800 }) // Set the desired width
+    //       .toBuffer();
 
     // Create a new festival instance with default value 0 for hasSpotlight
     const newFestival = new this.festivalsRepository({
@@ -121,7 +121,8 @@ async createFestival(createFestivalDTO: CreateFestivalDTO) {
       date: createFestivalDTO.date,
       description: createFestivalDTO.description,
       hasSpotlight: createFestivalDTO.hasSpotlight ,
-      eventImage: createFestivalDTO.eventImage ? optimizedImageBuffer : undefined,
+      eventImage: createFestivalDTO.eventImage ? createFestivalDTO.eventImage.buffer : undefined,
+      
       // Add other properties as needed
       hasSeva: createFestivalDTO.hasSeva,
       sevaId: createFestivalDTO.sevaId,

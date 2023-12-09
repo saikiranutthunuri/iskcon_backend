@@ -9,12 +9,16 @@ import {
   Req,
   UsePipes,
   ValidationPipe,
+  HttpException,
+  HttpCode, 
+  HttpStatus
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiProperty,
   ApiTags,
+  ApiBody
 } from '@nestjs/swagger';
 import { AudioChantService } from 'src/audio-chant/audio-chant.service';
 import { UserDetailsService } from 'src/user-details/user-details.service';
@@ -22,6 +26,7 @@ import { UsersService } from './users.service';
 import { IsNotEmpty } from 'class-validator';
 import { TickerTextService } from 'src/ticker-texts/ticker-texts.service';
 import { LiveStreamsService } from 'src/live-streams/live-streams.service';
+
 
 
 class UpdateProfileDTO {
@@ -81,7 +86,8 @@ export class UsersController {
     private readonly userDetailsService: UserDetailsService,
     private readonly tickerTextService: TickerTextService,
     private readonly audioChantService: AudioChantService,
-    private readonly liveStreamsService: LiveStreamsService
+    private readonly liveStreamsService: LiveStreamsService,
+   
   ) {}
 
   @Get('/profile/getProfile')
@@ -95,6 +101,8 @@ export class UsersController {
   GetTickerTextMethod() {
     return this.tickerTextService.getTickerText()
   }
+
+
 
   @Post('/profile/updateProfile')
   @ApiOperation({summary: "Updates user Profile"})
@@ -128,19 +136,7 @@ export class UsersController {
     return;
   }
 
-  @Post('/profile/setPhoneNumber')
-  @ApiOperation({summary: "Updates Phone Number for the user"})
-  @UsePipes(new ValidationPipe())
-  PostUpdatePhoneNumberMethod(
-    @Req() request: Request,
-    @Body() setPhoneNumberDTO: SetPhoneNumberDTO,
-  ) {
-    return this.userService
-      .setPhoneNumber(request['user'].userId, setPhoneNumberDTO.phoneNumber)
-      .then((result) => {
-        return 'Success';
-      });
-  }
+
 
   @Post('/profile/validatePhoneNumber')
   @UsePipes(new ValidationPipe())
@@ -201,4 +197,21 @@ export class UsersController {
   GetAllEngagements() {
     return;
   }
+
+  
+//  @Post('/sendOTP')
+//   async sendOTP(@Body('mobileNumber') mobileNumber: string): Promise<{ statusMessage: string }> {
+//     try {
+//       const otp = await this.liveStreamsService.sendOTP(mobileNumber);
+
+//       // Your additional logic if needed
+
+//       return {
+//         statusMessage: 'OTP sent successfully',
+//       };
+//     } catch (error) {
+//       this.logger.error(`Error processing sendOTP request: ${error.message}`);
+//       throw new HttpException('Unable to send OTP', HttpStatus.INTERNAL_SERVER_ERROR);
+//     }
+//   }
 }

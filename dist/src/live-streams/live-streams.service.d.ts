@@ -2,6 +2,7 @@ import { liveStreams } from 'src/models';
 export declare class LiveStreamsService {
     private readonly liveStreamsRepository;
     private logger;
+    private phoneNumberOTP;
     constructor(liveStreamsRepository: typeof liveStreams);
     createLiveStream(link: string): Promise<{
         status: boolean;
@@ -15,4 +16,5 @@ export declare class LiveStreamsService {
             streamLink: string;
         };
     }>;
+    private generateOTP;
 }

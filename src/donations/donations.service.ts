@@ -71,8 +71,10 @@ export class DonationsService {
     return donation;
   }
 
-  findDonations() {
-    return this.donationsRepository.findAll();
+   findDonations() {
+    return this.donationsRepository.findAll({
+      attributes: ['id', 'name', 'startDate', 'endDate', 'type'],
+    });
   }
 
   findDonationByDonationId(donationId) {
@@ -84,4 +86,7 @@ export class DonationsService {
       },
     });
   }
+
+   
+ 
 }

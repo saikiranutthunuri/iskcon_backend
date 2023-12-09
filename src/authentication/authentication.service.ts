@@ -103,9 +103,27 @@ export class AuthenticationService {
       userId: user.id,
       role: user.role
     };
+    const data = await this.jwtService.signAsync(payload)
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: data,
+    
+      
     };
+  }
+
+   async verifyAndDecodeToken(token: string): Promise<any> {
+    try {
+      // Verify and decode the JWT
+      const decodedToken = await this.jwtService.verifyAsync(token);
+
+      // Log the decoded payload
+      this.logger.log(`Decoded Token: ${JSON.stringify(decodedToken)}`);
+
+      return decodedToken;
+    } catch (error) {
+      this.logger.error(`Error verifying/decoding token: ${error.message}`);
+      throw new UnauthorizedException();
+    }
   }
 
   async updatePassword(username, oldPassword, newPassword) {

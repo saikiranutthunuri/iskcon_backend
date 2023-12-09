@@ -6,9 +6,10 @@ import { UserDetailsModule } from 'src/user-details/user-details.module';
 import { TickerTextModule } from 'src/ticker-texts/ticker-texts.module';
 import { AudioChantModule } from 'src/audio-chant/audio-chant.module';
 import { LiveStreamsModule } from 'src/live-streams/live-streams.module';
+import { SmsMessagesModule } from 'src/sms-messages/sms-messages.module';
 
 @Module({
-  imports: [UserDetailsModule, TickerTextModule, AudioChantModule , LiveStreamsModule],
+  imports: [UserDetailsModule, TickerTextModule, AudioChantModule , LiveStreamsModule ],
   controllers: [UsersController],
   providers: [UsersService, ...usersProviders],
   exports: [UsersService],

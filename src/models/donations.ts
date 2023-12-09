@@ -28,6 +28,8 @@ export interface donationsAttributes {
   lastModificationTime?: Date;
   lastModifierId?: string;
   actionType?: number;
+  imageLink?: string; //MODIFIED
+
 }
 
 @Table({ tableName: 'Donations', timestamps: false })
@@ -99,4 +101,7 @@ export class donations
 
   @Column({ field: 'ActionType', type: DataType.INTEGER, defaultValue: '0' })
   actionType?: number;
+
+  @Column({ field: 'imageLink', allowNull: true, type: DataType.CHAR(36) })
+  imageLink?: string;  //MODIFIED
 }

@@ -27,7 +27,7 @@ export interface sevasAttributes {
   lastModificationTime?: Date;
   lastModifierId?: string;
   actionType?: number;
-  
+  imageLink?: string;
 }
 
 @Table({ tableName: 'Sevas', timestamps: false })
@@ -93,4 +93,7 @@ export class sevas
 
   @Column({ field: 'ActionType', type: DataType.INTEGER, defaultValue: '0' })
   actionType?: number;
+
+  @Column({ field: 'imageLink', allowNull: true, type: DataType.CHAR(36) })
+  imageLink?: string;  //MODIFIED
 }

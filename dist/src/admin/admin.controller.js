@@ -27,6 +27,7 @@ const ticker_texts_service_1 = require("../ticker-texts/ticker-texts.service");
 const live_streams_service_1 = require("../live-streams/live-streams.service");
 const festivals_service_1 = require("../festivals/festivals.service");
 const calendar_events_service_1 = require("../calendar-events/calendar-events.service");
+const models_1 = require("../models");
 class CreateFestivalDTO {
 }
 exports.CreateFestivalDTO = CreateFestivalDTO;
@@ -508,8 +509,25 @@ let AdminController = AdminController_1 = class AdminController {
         updateDonationDTO.donationImage = donationImage ? Uint8Array.from(donationImage.buffer) : null;
         return this.donationsService.updateDonation(donationId, updateDonationDTO);
     }
-    GetAllDonationsMethod(request) {
-        return this.donationsService.findDonations();
+    async GetAllDonationsMethod(request) {
+        try {
+            return {
+                data: (await this.donationsService.findDonations()).map((donation) => {
+                    return {
+                        id: donation.id,
+                        title: donation.name,
+                        startDate: donation.startDate,
+                        endDate: donation.endDate,
+                        donationType: donation.type,
+                        imagelink: donation.imageLink
+                    };
+                }),
+            };
+        }
+        catch (error) {
+            this.logger.error(error);
+            return new common_1.HttpException(error, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     GetDonationsByDonationIdMethod(request, donationId) {
         return this.donationsService.findDonationByDonationId(donationId).then(result => {
@@ -531,8 +549,27 @@ let AdminController = AdminController_1 = class AdminController {
         updateSevaDTO.sevaImage = sevaImage ? Uint8Array.from(sevaImage.buffer) : null;
         return this.sevasService.updateSeva(sevaId, updateSevaDTO);
     }
-    GetAllSevasMethod(request) {
-        return this.sevasService.findSevas();
+    async GetAllSevasMethod(request) {
+        try {
+            return {
+                data: (await this.sevasService.findSevas()).map((seva) => {
+                    return {
+                        id: seva.id,
+                        title: seva.name,
+                        description: seva.description,
+                        startDate: seva.startDate,
+                        endDate: seva.endDate,
+                        sevaType: seva.type,
+                        minAmount: seva.minAmount,
+                        imagelink: seva.imageLink
+                    };
+                }),
+            };
+        }
+        catch (error) {
+            this.logger.error(error);
+            return new common_1.HttpException(error, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     GetSevasBySevaIdMethod(request, sevaId) {
         return this.sevasService.findSevaBySevaId(sevaId).then(result => {
@@ -593,13 +630,23 @@ let AdminController = AdminController_1 = class AdminController {
             throw new common_1.HttpException('Failed to get festival by ID', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async getAllFestivals() {
+    async GetAllFestivalsMethod(request) {
         try {
-            return this.calendareventsService.getAllFestivals();
+            return {
+                data: (await models_1.calenderEvents.findAll()).map((festival) => {
+                    return {
+                        id: festival.id,
+                        title: festival.name,
+                        description: festival.description,
+                        date: festival.date,
+                        imageLink: festival.imageLink
+                    };
+                }),
+            };
         }
         catch (error) {
-            this.logger.error(error.message);
-            throw new common_1.HttpException('Failed to get festivals', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            this.logger.error(error);
+            return new common_1.HttpException(error, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async deleteFestivalById(festivalId) {
@@ -814,12 +861,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "updateDonation", null);
 __decorate([
-    (0, common_1.Get)("/donations/getDonations"),
-    (0, swagger_1.ApiOperation)({ summary: "Gets all donations" }),
+    (0, common_1.Get)('/donations/getDonations'),
+    (0, swagger_1.ApiOperation)({ summary: 'Gets all donations' }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Request]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AdminController.prototype, "GetAllDonationsMethod", null);
 __decorate([
     (0, common_1.Get)("/donations/getDonation/:donationId"),
@@ -873,12 +920,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "updateSeva", null);
 __decorate([
-    (0, common_1.Get)("/sevas/getSevas"),
-    (0, swagger_1.ApiOperation)({ summary: "Gets all sevas" }),
+    (0, common_1.Get)('/sevas/getSevas'),
+    (0, swagger_1.ApiOperation)({ summary: 'Gets all sevas' }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Request]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AdminController.prototype, "GetAllSevasMethod", null);
 __decorate([
     (0, common_1.Get)("/sevas/getSeva/:sevaId"),
@@ -923,12 +970,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "getFestivalById", null);
 __decorate([
-    (0, common_1.Get)('/festivals/getAllFestivals'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get all festivals' }),
+    (0, common_1.Get)('/festivals/getFestivals'),
+    (0, swagger_1.ApiOperation)({ summary: 'Gets all fesytivals' }),
+    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Request]),
     __metadata("design:returntype", Promise)
-], AdminController.prototype, "getAllFestivals", null);
+], AdminController.prototype, "GetAllFestivalsMethod", null);
 __decorate([
     (0, common_1.Delete)('/festivals/deleteFestival/:id'),
     (0, swagger_1.ApiOperation)({ summary: 'Delete festival by ID' }),

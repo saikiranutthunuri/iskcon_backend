@@ -106,13 +106,6 @@ let UsersController = UsersController_1 = class UsersController {
     setProfilePictureMethod() {
         return;
     }
-    PostUpdatePhoneNumberMethod(request, setPhoneNumberDTO) {
-        return this.userService
-            .setPhoneNumber(request['user'].userId, setPhoneNumberDTO.phoneNumber)
-            .then((result) => {
-            return 'Success';
-        });
-    }
     PostValidatePhoneNumber(request, validatePhoneNumberDTO) {
         return this.userService.validatePhoneNumber(request['id'], validatePhoneNumberDTO.phoneNumber, validatePhoneNumberDTO.otp);
     }
@@ -180,17 +173,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "setProfilePictureMethod", null);
-__decorate([
-    (0, common_1.Post)('/profile/setPhoneNumber'),
-    (0, swagger_1.ApiOperation)({ summary: "Updates Phone Number for the user" }),
-    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request,
-        SetPhoneNumberDTO]),
-    __metadata("design:returntype", void 0)
-], UsersController.prototype, "PostUpdatePhoneNumberMethod", null);
 __decorate([
     (0, common_1.Post)('/profile/validatePhoneNumber'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),

@@ -20,6 +20,7 @@ export interface calenderEventsAttributes {
     hasEvent?: string;
     hasSpotlight?: string;
     spotlightId?: string;
+    imageLink?: string;
 }
 export declare class calenderEvents extends Model<calenderEventsAttributes, calenderEventsAttributes> implements calenderEventsAttributes {
     id: string;
@@ -42,4 +43,5 @@ export declare class calenderEvents extends Model<calenderEventsAttributes, cale
     hasEvent?: string;
     hasSpotlight?: string;
     spotlightId?: string;
+    imageLink?: string;
 }

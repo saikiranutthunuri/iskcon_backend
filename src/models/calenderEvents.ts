@@ -29,6 +29,7 @@ export interface calenderEventsAttributes {
   hasEvent?: string;
   hasSpotlight?: string;
   spotlightId?: string;
+   imageLink?: string;
 }
 
 @Table({ tableName: 'CalenderEvents', timestamps: false })
@@ -100,4 +101,8 @@ export class calenderEvents
 
   @Column({ field: 'SpotlightId', allowNull: true, type: DataType.CHAR(36) })
   spotlightId?: string;
+  
+  @Column({ field: 'ImageLink', allowNull: true, type: DataType.CHAR(255) })
+  imageLink?: string;
+
 }

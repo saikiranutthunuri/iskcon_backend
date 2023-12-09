@@ -11,6 +11,7 @@ import { LiveStreamsService } from 'src/live-streams/live-streams.service';
 import { sevas } from 'src/models';
 import { FestivalsService } from 'src/festivals/festivals.service';
 import { CalendarEventsService } from 'src/calendar-events/calendar-events.service';
+import { donations, calenderEvents } from 'src/models';
 export declare class CreateFestivalDTO {
     name: string;
     date: Date;
@@ -133,15 +134,35 @@ export declare class AdminController {
         statusMessage: string;
         data: null;
     }>;
-    createDonation(createDonationDTO: CreateDonationDTO, donationImage: Express.Multer.File): Promise<import("src/models").donations>;
-    updateDonation(donationId: string, updateDonationDTO: UpdateDonationDTO, donationImage: Express.Multer.File): Promise<import("src/models").donations>;
-    GetAllDonationsMethod(request: Request): Promise<import("src/models").donations[]>;
-    GetDonationsByDonationIdMethod(request: Request, donationId: string): Promise<HttpException | import("src/models").donations>;
+    createDonation(createDonationDTO: CreateDonationDTO, donationImage: Express.Multer.File): Promise<donations>;
+    updateDonation(donationId: string, updateDonationDTO: UpdateDonationDTO, donationImage: Express.Multer.File): Promise<donations>;
+    GetAllDonationsMethod(request: Request): Promise<HttpException | {
+        data: {
+            id: string;
+            title: string;
+            startDate: Date;
+            endDate: Date;
+            donationType: number;
+            imagelink: string;
+        }[];
+    }>;
+    GetDonationsByDonationIdMethod(request: Request, donationId: string): Promise<donations | HttpException>;
     DeleteDonation(request: Request, donationId: any): Promise<number>;
     createSeva(createSevaDTO: CreateSevasDTO, sevaImage: Express.Multer.File): Promise<sevas>;
     updateSeva(sevaId: string, updateSevaDTO: UpdateSevaDTO, sevaImage: Express.Multer.File): Promise<sevas>;
-    GetAllSevasMethod(request: Request): Promise<sevas[]>;
-    GetSevasBySevaIdMethod(request: Request, sevaId: string): Promise<HttpException | sevas>;
+    GetAllSevasMethod(request: Request): Promise<HttpException | {
+        data: {
+            id: string;
+            title: string;
+            description: string;
+            startDate: Date;
+            endDate: Date;
+            sevaType: number;
+            minAmount: number;
+            imagelink: string;
+        }[];
+    }>;
+    GetSevasBySevaIdMethod(request: Request, sevaId: string): Promise<sevas | HttpException>;
     DeleteSevaMethod(request: Request, sevaId: any): Promise<number | void>;
     createFestival(createFestivalDTO: CreateFestivalDTO, eventImage: Express.Multer.File): Promise<{
         id: string;
@@ -150,8 +171,16 @@ export declare class AdminController {
         description: string;
         hasSpotlight: string;
     }>;
-    getFestivalById(festivalId: string): Promise<import("src/models").calenderEvents>;
-    getAllFestivals(): Promise<import("src/models").calenderEvents[]>;
+    getFestivalById(festivalId: string): Promise<calenderEvents>;
+    GetAllFestivalsMethod(request: Request): Promise<HttpException | {
+        data: {
+            id: string;
+            title: string;
+            description: string;
+            date: Date;
+            imageLink: string;
+        }[];
+    }>;
     deleteFestivalById(festivalId: string): Promise<{
         message: string;
     }>;

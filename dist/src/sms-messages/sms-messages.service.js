@@ -11,13 +11,16 @@ const common_1 = require("@nestjs/common");
 const plivo = require('plivo');
 const authId = 'MANTM1NJQ4YZMXYJZMZM';
 const authToken = 'NWE4ZjJiN2Q4MDU1ZWYwYzNhYzg3ZmVjYWMyMDVj';
-const sendPhoneNumber = '917032128349';
 let SmsMessagesService = class SmsMessagesService {
-    constructor() {
-        this.plivoClient = new plivo.Client(authId, authToken);
-    }
-    sentOTP(phoneNumber) {
-        return this.plivoClient;
+    async sendsms() {
+        const client = new plivo.client(authId, authToken);
+        client.messages.create({
+            src: '+14156667778',
+            dst: '14156667777',
+            text: 'Hello, this is a sample text from Plivo',
+        }).then(function (response) {
+            console.log(response);
+        });
     }
 };
 exports.SmsMessagesService = SmsMessagesService;
