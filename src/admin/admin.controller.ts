@@ -633,7 +633,14 @@ async updateDonation(
               startDate: donation.startDate,
               endDate: donation.endDate,
               donationType: donation.type,
-              imagelink: donation.imageLink
+              imagelink: donation.imageLink,
+              targetamount: donation.targetAmount,
+              actiontype: donation.actionType,
+              description: donation.description,
+              amountype: donation.amountType,
+              impact: donation.impact,
+              
+
             };
           },
         ),
@@ -722,7 +729,11 @@ async updateDonation(
             endDate: seva.endDate,
             sevaType: seva.type,
             minAmount: seva.minAmount,
-            imagelink: seva.imageLink
+            imagelink: seva.imageLink,
+            actiontype: seva.actionType,
+            maxusers: seva.maxUsers,
+            
+
           };
         }),
       };
