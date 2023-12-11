@@ -3,13 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { liveStreams } from 'src/models'; // Adjust the import based on your models
 import plivo from 'plivo'
 
-const authId = 'MAMDK5NJBMMDA2ODBLNT';
-const authToken = 'YjBkMWQ0ODk5OTJiZWJhOGU0M2JlNDc4MTcwYTNi';
-const sendPhoneNumber = '+13502003495';
-const SMS_MESSAGE_TEMPLATE_FOR_OTP = (userName, token) =>
-  `Dear ${userName}, Your OTP for completing this transaction is ${token}. Valid for 10 minutes. If you have not requested this OTP, please ignore this message.`;
-const SMS_MESSAGE_TEMPLATE_FOR_CONSERT =
-  'Hare Krishna!\r\n\r\nWe have built a new platform for Devotees, making the experience faster and more transparent. Please click the link to Register - https://iskconclient.azurewebsites.net/empty/registerConsentPage?consent_id={0}';
+
 
 @Injectable()
 export class LiveStreamsService {
@@ -73,30 +67,7 @@ async getLiveStreams(): Promise<{ status: boolean; statusMessage: null; data: { 
 }
 
 
-//  async sendOTP(dst: string): Promise<string> {
-//     const client = new plivo.Client(authId, authToken);
-//     const token = this.generateOTP();
 
-//     try {
-//       return await client.messages.create({
-//         src: sendPhoneNumber,
-//         dst: dst,
-//         text: `Your OTP is: ${token}`,
-        
-    
-//       });
-
-//       this.logger.debug(`OTP sent to ${dst}`);
-      
-//     } catch (error) {
-//       this.logger.error(`Error sending OTP to ${dst}: ${error.message}`);
-//       throw error;
-//     }
-//   }
-
-  private generateOTP(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-  }
 
 
 
