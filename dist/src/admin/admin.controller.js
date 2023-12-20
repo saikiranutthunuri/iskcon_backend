@@ -519,7 +519,13 @@ let AdminController = AdminController_1 = class AdminController {
                         startDate: donation.startDate,
                         endDate: donation.endDate,
                         donationType: donation.type,
-                        imagelink: donation.imageLink
+                        imagelink: donation.imageLink,
+                        targetamount: donation.targetAmount,
+                        actiontype: donation.actionType,
+                        description: donation.description,
+                        amountype: donation.amountType,
+                        impact: donation.impact,
+                        type: 1
                     };
                 }),
             };
@@ -561,7 +567,10 @@ let AdminController = AdminController_1 = class AdminController {
                         endDate: seva.endDate,
                         sevaType: seva.type,
                         minAmount: seva.minAmount,
-                        imagelink: seva.imageLink
+                        imagelink: seva.imageLink,
+                        actiontype: seva.actionType,
+                        maxusers: seva.maxUsers,
+                        type: 2
                     };
                 }),
             };
@@ -639,7 +648,15 @@ let AdminController = AdminController_1 = class AdminController {
                         title: festival.name,
                         description: festival.description,
                         date: festival.date,
-                        imageLink: festival.imageLink
+                        imagelink: festival.imageLink,
+                        hasdonation: festival.hasDonation,
+                        hasseva: festival.hasSeva,
+                        hasevent: festival.hasEvent,
+                        sevaid: festival.sevaId,
+                        donationid: festival.donationId,
+                        eventid: festival.eventId,
+                        hasspotlight: festival.hasSpotlight,
+                        spotlightid: festival.spotlightId
                     };
                 }),
             };

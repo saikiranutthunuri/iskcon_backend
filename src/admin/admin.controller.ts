@@ -639,6 +639,7 @@ async updateDonation(
               description: donation.description,
               amountype: donation.amountType,
               impact: donation.impact,
+              type:1
               
 
             };
@@ -732,6 +733,7 @@ async updateDonation(
             imagelink: seva.imageLink,
             actiontype: seva.actionType,
             maxusers: seva.maxUsers,
+            type: 2
             
 
           };

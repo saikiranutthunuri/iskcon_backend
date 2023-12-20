@@ -144,6 +144,12 @@ export declare class AdminController {
             endDate: Date;
             donationType: number;
             imagelink: string;
+            targetamount: number;
+            actiontype: number;
+            description: string;
+            amountype: number;
+            impact: number;
+            type: number;
         }[];
     }>;
     GetDonationsByDonationIdMethod(request: Request, donationId: string): Promise<donations | HttpException>;
@@ -160,6 +166,9 @@ export declare class AdminController {
             sevaType: number;
             minAmount: number;
             imagelink: string;
+            actiontype: number;
+            maxusers: number;
+            type: number;
         }[];
     }>;
     GetSevasBySevaIdMethod(request: Request, sevaId: string): Promise<sevas | HttpException>;
@@ -178,7 +187,15 @@ export declare class AdminController {
             title: string;
             description: string;
             date: Date;
-            imageLink: string;
+            imagelink: string;
+            hasdonation: string;
+            hasseva: string;
+            hasevent: string;
+            sevaid: string;
+            donationid: string;
+            eventid: string;
+            hasspotlight: string;
+            spotlightid: string;
         }[];
     }>;
     deleteFestivalById(festivalId: string): Promise<{

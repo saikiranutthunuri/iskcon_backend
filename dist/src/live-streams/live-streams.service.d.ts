@@ -16,5 +16,4 @@ export declare class LiveStreamsService {
             streamLink: string;
         };
     }>;
-    private generateOTP;
 }
