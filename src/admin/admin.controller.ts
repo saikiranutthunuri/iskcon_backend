@@ -863,7 +863,7 @@ async createFestival(
             title: festival.name,
             description: festival.description,
             date: festival.date,
-            imageLink: festival.imageLink,
+            imagelink: festival.imageLink,
             hasdonation: festival.hasDonation,
             hasseva: festival.hasSeva,
             hasevent: festival.hasEvent,
